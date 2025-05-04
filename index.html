@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leukemia Detection</title>
+    <link rel="icon" type="image/png" href="/static/images/favicon.png">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!-- Google Fonts (Roboto) -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', Arial, sans-serif;
+            margin: 0;
+            background-color: #f9fafb;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Navbar Styles */
+        .navbar {
+            width: 100%;
+            background: #4b0082;
+            padding: 15px 30px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            color: #fff;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            transition: background 0.3s ease;
+        }
+        .navbar:hover {
+            background: #3a006b;
+        }
+        .navbar .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .navbar .logo-section i {
+            font-size: 2em;
+            color: #e6e6fa;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        .navbar h2 {
+            margin: 0;
+            font-size: 1.8em;
+            color: #e6e6fa;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+        .navbar .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-left: 485px;
+        }
+        .navbar .nav-links > a {
+            color: #e6e6fa !important;
+            text-decoration: none !important;
+            font-size: 1.1em;
+            padding: 8px 15px;
+            border-radius: 5px;
+            transition: background 0.3s ease, color 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+            border-bottom: none !important;
+        }
+        .navbar .nav-links > a:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff !important;
+            border-bottom: none !important;
+        }
+        .navbar .nav-links > a.active {
+            background: #3a006b;
+            color: #fff !important;
+        }
+        .profile-dropdown {
+            position: relative;
+        }
+        .profile-dropdown > a {
+            color: #e6e6fa !important;
+            text-decoration: none !important;
+            padding: 8px 15px;
+            border-radius: 5px;
+            transition: background 0.3s ease, color 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+            border-bottom: none !important;
+        }
+        .profile-dropdown > a:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff !important;
+        }
+        .profile-dropdown .dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            background: #4b0082;
+            border-radius: 5px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            min-width: 200px;
+            z-index: 1001;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: opacity 0.2s ease, transform 0.2s ease;
+        }
+        .profile-dropdown:hover .dropdown-content,
+        .profile-dropdown.active .dropdown-content {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .profile-dropdown .dropdown-content a {
+            color: #e6e6fa !important;
+            padding: 12px 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1em;
+            text-decoration: none !important;
+            border-bottom: none !important;
+            transition: background 0.3s ease;
+        }
+        .profile-dropdown .dropdown-content a:hover {
+            background: #3a006b;
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 50px 20px;
+            margin-top: 80px;
+        }
+
+        /* Upload Form Styles */
+        .upload-container {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(5px);
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 6px 25px rgba(75, 0, 130, 0.2);
+            max-width: 450px;
+            width: 100%;
+            text-align: center;
+            animation: fadeIn 0.6s ease-in-out;
+            border: 1px solid rgba(75, 0, 130, 0.1);
+        }
+        h1 {
+            color: #4b0082;
+            font-size: 2em;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+        .file-input-wrapper {
+            position: relative;
+            margin: 15px 0;
+            width: 100%;
+        }
+        input[type="file"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px dashed #4b0082;
+            border-radius: 8px;
+            font-size: 1em;
+            cursor: pointer;
+            background: #f9fafb;
+            transition: border-color 0.3s ease;
+        }
+        input[type="file"]:hover {
+            border-color: #3a006b;
+        }
+        input[type="file"]::-webkit-file-upload-button {
+            visibility: hidden;
+        }
+        input[type="file"]::before {
+            content: 'Choose Image';
+            display: inline-block;
+            background: #4b0082;
+            color: #fff;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.95em;
+            margin-right: 10px;
+            transition: background 0.3s ease;
+        }
+        input[type="file"]:hover::before {
+            background: #3a006b;
+        }
+        #file-name {
+            font-style: italic;
+            color: #666;
+            display: block;
+            margin-top: 10px;
+            font-size: 0.9em;
+        }
+        button {
+            background: #4b0082;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 1em;
+            transition: background 0.3s ease, transform 0.2s ease;
+            width: 100%;
+            margin-top: 15px;
+        }
+        button:hover {
+            background: #3a006b;
+            transform: scale(1.02);
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1002;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background: #fff;
+            padding: 25px;
+            padding-right: 40px;
+            border-radius: 10px;
+            width: 100%;
+            max-width: 400px;
+            text-align: left;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+        .modal-content h3 {
+            color: #4b0082;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+        .modal-content .input-container {
+            position: relative;
+            margin-bottom: 15px;
+        }
+        .modal-content input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1em;
+        }
+        .modal-content .password-toggle {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #4b0082;
+        }
+        .modal-content button {
+            padding: 10px 20px;
+            background: #4b0082;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background 0.3s ease;
+            margin-right: 10px;
+            margin-top: 15px;
+        }
+        .modal-content button:hover {
+            background: #3a006b;
+        }
+        .modal-content .error {
+            color: red;
+            font-size: 0.9em;
+            margin-top: 5px;
+            display: none;
+        }
+        .close-modal {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 1.5em;
+            cursor: pointer;
+            color: #4b0082;
+        }
+
+        /* Animation */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 10px 15px;
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+            .navbar .logo-section {
+                flex: 1;
+            }
+            .navbar .logo-section i {
+                font-size: 1.6em;
+            }
+            .navbar h2 {
+                font-size: 1.4em;
+            }
+            .navbar .nav-links {
+                gap: 8px;
+                margin-left: 0;
+                flex-wrap: wrap;
+                justify-content: flex-end;
+            }
+            .navbar .nav-links > a {
+                font-size: 0.95em;
+                padding: 6px 10px;
+            }
+            .profile-dropdown > a {
+                font-size: 0.95em;
+                padding: 6px 10px;
+            }
+            .profile-dropdown .dropdown-content {
+                right: -5px;
+                min-width: 140px;
+            }
+            .profile-dropdown .dropdown-content a {
+                padding: 10px 12px;
+                font-size: 0.9em;
+            }
+            .upload-container {
+                padding: 25px;
+                width: 90%;
+            }
+            h1 {
+                font-size: 1.8em;
+            }
+            .modal-content {
+                padding: 15px;
+            }
+            .modal-content h3 {
+                font-size: 1.2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <div class="navbar">
+        <div class="logo-section">
+            <i class="fas fa-ribbon"></i>
+            <h2>Doctor Dashboard</h2>
+        </div>
+        <div class="nav-links">
+            <a href="{{ url_for('doctor_dashboard') }}" id="home-btn"><i class="fas fa-home"></i> Home</a>
+            <a href="{{ url_for('doctor_about') }}" id="about-btn"><i class="fas fa-info-circle"></i> About</a>
+            <a href="{{ url_for('diagnosis') }}" id="diagnosis-btn" class="active"><i class="fas fa-stethoscope"></i> Diagnosis</a>
+            <a href="{{ url_for('patients') }}" id="patients-btn"><i class="fas fa-users"></i> Patients</a>
+            <a href="{{ url_for('medication') }}" id="medication-btn"><i class="fas fa-prescription-bottle-alt"></i> Medication</a>
+            <div class="profile-dropdown">
+                <a href="#" id="profile-btn"><i class="fas fa-user-circle" style="font-size: 1.5em;"></i></a>
+                <div class="dropdown-content">
+                    <a href="#" id="profile-details-btn"><i class="fas fa-user"></i> Profile</a>
+                    <a href="#" id="change-password-btn"><i class="fas fa-lock"></i> Change Password</a>
+                    <a href="#" id="forgot-password-btn"><i class="fas fa-key"></i> Forgot Password</a>
+                    <a href="{{ url_for('logout') }}" id="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="upload-container">
+            <form action="{{ url_for('analyze') }}" method="post" enctype="multipart/form-data">
+                <h1>Upload Blood Cell Image</h1>
+                <div class="file-input-wrapper">
+                    <input type="file" name="image" id="file-input" required>
+                    <span id="file-name">No file selected</span>
+                </div>
+                <button type="submit">Analyze</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Change Password Modal -->
+    <div id="changePasswordModal" class="modal">
+        <div class="modal-content">
+            <h3>Change Password</h3>
+            <span class="close-modal" onclick="closeModal('changePasswordModal')">×</span>
+            <div class="input-container">
+                <input type="password" id="currentPassword" placeholder="Current Password" required>
+                <i class="fas fa-eye password-toggle" id="toggleCurrentPassword" onclick="togglePassword('currentPassword')"></i>
+            </div>
+            <div class="input-container">
+                <input type="password" id="newPasswordChange" placeholder="New Password" required>
+                <i class="fas fa-eye password-toggle" id="toggleNewPasswordChange" onclick="togglePassword('newPasswordChange')"></i>
+            </div>
+            <div class="input-container">
+                <input type="password" id="confirmPasswordChange" placeholder="Confirm New Password" required>
+                <i class="fas fa-eye password-toggle" id="toggleConfirmPasswordChange" onclick="togglePassword('confirmPasswordChange')"></i>
+            </div>
+            <div id="changeErrorMessage" class="error">Passwords do not match or current password is incorrect!</div>
+            <button onclick="submitChangePassword()">Submit</button>
+            <button onclick="closeModal('changePasswordModal')">Cancel</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Update file name display
+            document.getElementById("file-input").addEventListener("change", function() {
+                let fileName = this.files.length > 0 ? this.files[0].name : "No file selected";
+                document.getElementById("file-name").textContent = fileName;
+            });
+
+            // Set active link based on current page
+            const navLinks = document.querySelectorAll('.navbar .nav-links > a');
+            const profileDropdown = document.querySelector('.profile-dropdown');
+            const dropdownContent = document.querySelector('.profile-dropdown .dropdown-content');
+            let isDropdownOpen = false;
+
+            // Toggle profile dropdown on click
+            document.getElementById('profile-btn').addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                isDropdownOpen = !isDropdownOpen;
+                profileDropdown.classList.toggle('active', isDropdownOpen);
+                dropdownContent.style.display = isDropdownOpen ? 'block' : 'none';
+            });
+
+            // Set active link based on current page
+            const currentPath = window.location.pathname;
+            navLinks.forEach(link => {
+                if (link.getAttribute('href') === currentPath) {
+                    link.classList.add('active');
+                }
+            });
+
+            // Close dropdown when clicking outside
+            window.addEventListener('click', function(e) {
+                if (!e.target.closest('.profile-dropdown') && !profileDropdown.contains(e.target)) {
+                    isDropdownOpen = false;
+                    profileDropdown.classList.remove('active');
+                    dropdownContent.style.display = 'none';
+                }
+            });
+
+            // Handle profile dropdown actions
+            document.getElementById('profile-details-btn').addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                // Redirect to the profile page
+                window.location.href = '{{ url_for("doctor_profile") }}';
+            });
+
+            document.getElementById('change-password-btn').addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                const modal = document.getElementById('changePasswordModal');
+                if (modal) {
+                    modal.style.display = 'flex';
+                    document.getElementById('changeErrorMessage').style.display = 'none';
+                    document.getElementById('currentPassword').value = '';
+                    document.getElementById('newPasswordChange').value = '';
+                    document.getElementById('confirmPasswordChange').value = '';
+                } else {
+                    console.error('Change Password modal not found in DOM');
+                }
+            });
+
+            document.getElementById('forgot-password-btn').addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                // Redirect to the forgot password page
+                window.location.href = '{{ url_for("forgot_password") }}';
+            });
+
+            // Toggle password visibility
+            function togglePassword(fieldId) {
+                const input = document.getElementById(fieldId);
+                const toggleIcon = document.getElementById(`toggle${fieldId.charAt(0).toUpperCase() + fieldId.slice(1)}`);
+                if (input && toggleIcon) {
+                    if (input.type === 'password') {
+                        input.type = 'text';
+                        toggleIcon.classList.remove('fa-eye');
+                        toggleIcon.classList.add('fa-eye-slash');
+                    } else {
+                        input.type = 'password';
+                        toggleIcon.classList.remove('fa-eye-slash');
+                        toggleIcon.classList.add('fa-eye');
+                    }
+                }
+            }
+
+            // Close modal function
+            function closeModal(modalId) {
+                const modal = document.getElementById(modalId);
+                if (modal) {
+                    modal.style.display = 'none';
+                    if (modalId === 'changePasswordModal') {
+                        document.getElementById('changeErrorMessage').style.display = 'none';
+                        document.getElementById('currentPassword').value = '';
+                        document.getElementById('newPasswordChange').value = '';
+                        document.getElementById('confirmPasswordChange').value = '';
+                    }
+                }
+            }
+
+            // Submit Change Password
+            function submitChangePassword() {
+                const currentPassword = document.getElementById('currentPassword').value;
+                const newPassword = document.getElementById('newPasswordChange').value;
+                const confirmPassword = document.getElementById('confirmPasswordChange').value;
+                const errorMessage = document.getElementById('changeErrorMessage');
+
+                if (!currentPassword || !newPassword || !confirmPassword) {
+                    errorMessage.textContent = 'Please fill in all fields!';
+                    errorMessage.style.display = 'block';
+                    return;
+                }
+
+                if (newPassword !== confirmPassword) {
+                    errorMessage.textContent = 'New password and confirmation do not match!';
+                    errorMessage.style.display = 'block';
+                    return;
+                }
+
+                fetch('/doctor/change_password', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ current_password: currentPassword, new_password: newPassword, confirm_password: confirmPassword })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Password changed successfully!');
+                        closeModal('changePasswordModal');
+                    } else {
+                        errorMessage.textContent = data.message || 'Error changing password';
+                        errorMessage.style.display = 'block';
+                    }
+                })
+                .catch(error => {
+                    errorMessage.textContent = `Error: ${error.message}`;
+                    errorMessage.style.display = 'block';
+                });
+            }
+
+            // Expose functions to global scope for HTML onclick events
+            window.togglePassword = togglePassword;
+            window.closeModal = closeModal;
+            window.submitChangePassword = submitChangePassword;
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Blood Cancer Diagnosis - Home</title>
+  <link rel="icon" href="data:image/svg+xml,
+<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'>
+  <text y='50%' x='50%' text-anchor='middle' dominant-baseline='central' font-size='48'>🩸</text>
+</svg>">
+
+  <!-- Google Fonts (Roboto) -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    /* General Styles */
+    body {
+      font-family: 'Roboto', sans-serif;
+      margin: 0;
+      background-color: #f9fafb;
+      overflow-x: hidden; /* Hide horizontal scrollbar */
+      color: #374151;
+    }
+
+    html {
+      height: 100%;
+      overflow-x: hidden; /* Prevent horizontal overflow */
+    }
+
+    /* Wrapper to handle scrolling */
+    .scroll-wrapper {
+      width: 100%;
+      height: 100vh;
+      overflow-y: auto; /* Enable vertical scrolling */
+      overflow-x: hidden;
+      -ms-overflow-style: none; /* IE and Edge */
+      scrollbar-width: none; /* Firefox */
+    }
+    .scroll-wrapper::-webkit-scrollbar {
+      display: none; /* WebKit browsers (Chrome, Safari, Edge) */
+    }
+
+    h1 {
+      font-size: 2.25rem;
+      font-weight: 700;
+      color: #4b0082;
+      margin-bottom: 1rem;
+    }
+
+    h2 {
+      font-size: 1.875rem;
+      font-weight: 700;
+      color: #4b0082;
+      margin-top: 2rem;
+      margin-bottom: 1rem;
+    }
+
+    p {
+      font-size: 1.125rem;
+      line-height: 1.75;
+      margin-bottom: 0.75rem;
+    }
+
+    strong {
+      color: #4b0082;
+      font-weight: 600;
+    }
+
+    /* Navbar Styles */
+    .navbar {
+      background-color: #4b0082;
+      padding: 0.85rem 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 50;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      min-height: 1rem;
+      font-family: sans-serif;
+    }
+
+    /* Logo */
+    .navbar .logo,
+    .navbar .logo-section {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      margin-left: 1rem;
+    }
+
+    .navbar .logo i,
+    .navbar .logo-section i {
+      margin-right: 0.5rem;
+      font-size: 1.5rem;
+    }
+
+    /* Nav links */
+    .navbar .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-right: 2rem;
+      flex-shrink: 0;
+    }
+
+    .navbar .nav-links a,
+    .navbar .dropdown-btn {
+      color: #fff;
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 1rem;
+      padding: 0.5rem 1rem;
+      border-radius: 0.375rem;
+      background: transparent;
+      transition: background-color 0.3s ease, transform 0.3s ease;
+      display: flex;
+      align-items: center;
+      white-space: nowrap;
+      flex-shrink: 0;
+      border: none;
+      outline: none;
+    }
+
+    .navbar .nav-links a i,
+    .navbar .dropdown-btn i {
+      margin-right: 0.5rem;
+    }
+
+    .navbar .nav-links a:hover,
+    .navbar .dropdown-btn:hover {
+      background-color: rgba(255, 255, 255, 0.2);
+      transform: scale(1.05);
+    }
+
+    /* Dropdown */
+    .navbar .dropdown {
+      position: relative;
+    }
+
+    .navbar .dropdown-content {
+      display: none;
+      position: absolute;
+      top: 100%;
+      right: 0;
+      background-color: #fff;
+      color: #4b0082;
+      min-width: 160px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      border-radius: 0.375rem;
+      z-index: 60;
+    }
+
+    .navbar .dropdown:hover .dropdown-content {
+      display: block;
+    }
+
+    .navbar .dropdown-content a {
+      color: #4b0082;
+      padding: 0.75rem 1rem;
+      display: flex;
+      align-items: center;
+      text-decoration: none;
+      font-weight: 500;
+      background-color: transparent;
+      transition: background-color 0.3s ease;
+    }
+
+    .navbar .dropdown-content a i {
+      margin-right: 0.5rem;
+    }
+
+    .navbar .dropdown-content a:hover {
+      background-color: #f3f4f6;
+    }
+
+    /* Specific Button override */
+    .navbar .nav-links button {
+      background: transparent;
+      color: #fff;
+      border: none;
+      outline: none;
+      font-weight: 500;
+      font-size: 1rem;
+      padding: 0.5rem 1rem;
+      border-radius: 0.375rem;
+      display: flex;
+      align-items: center;
+      white-space: nowrap;
+      transition: background-color 0.3s ease, transform 0.3s ease;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    .navbar .nav-links button:hover {
+      background-color: rgba(255, 255, 255, 0.2);
+      transform: scale(1.05);
+    }
+
+    /* Carousel Styles */
+    .carousel {
+      width: 100%;
+      height: 400px;
+      overflow: hidden;
+      position: relative;
+      margin-top: 3.9rem; /* Increased to clear navbar */
+    }
+
+    .carousel-slide {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      opacity: 0;
+      transition: opacity 0.5s ease-in-out;
+    }
+
+    .carousel-slide.active {
+      opacity: 1;
+    }
+
+    .carousel-slide img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .carousel-indicators {
+      position: absolute;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      background-color: #fff;
+      border: 2px solid #4b0082;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .dot.active {
+      background-color: #4b0082;
+    }
+
+    /* Content Section */
+    .content {
+      max-width: 90%;
+      margin: 2rem auto;
+      padding: 2rem 3rem;
+      background-color: #fff;
+      border-radius: 0.75rem;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+      text-align: center;
+      margin-top: 0rem; /* Increased to clear navbar */
+    }
+
+    /* Contact Form */
+    .contact-form {
+      margin-top: 1rem;
+    }
+
+    .contact-form input,
+    .contact-form textarea {
+      width: 100%;
+      padding: 0.5rem;
+      margin-bottom: 0.75rem;
+      border: 1px solid #d1d5db;
+      border-radius: 0.375rem;
+      transition: border-color 0.3s ease;
+    }
+
+    .contact-form input:focus,
+    .contact-form textarea:focus {
+      outline: none;
+      border-color: #4b0082;
+      box-shadow: 0 0 0 2px rgba(75, 0, 130, 0.2);
+    }
+
+    .contact-form button {
+      background-color: #4b0082;
+      color: #fff;
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 0.375rem;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .contact-form button:hover {
+      background-color: #3a0063;
+    }
+
+    /* Footer */
+    .footer {
+      background-color: #4b0082;
+      color: #fff;
+      padding: 1rem 2rem;
+      margin-top: 2rem;
+      text-align: center;
+    }
+
+    .footer a {
+      color: #fff;
+      text-decoration: none;
+      margin: 0 0.5rem;
+      transition: color 0.3s ease;
+    }
+
+    .footer a:hover {
+      color: #d1d5db;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 640px) {
+      .navbar {
+        padding: 1rem 1rem; /* Adjusted padding for small screens */
+      }
+
+      .navbar .logo {
+        font-size: 1.25rem;
+      }
+
+      .navbar .nav-links {
+        gap: 0.75rem; /* Reduced gap for small screens */
+      }
+
+      .navbar .nav-links a {
+        font-size: 0.875rem;
+        padding: 0.25rem 0.75rem;
+      }
+
+      .content {
+        max-width: 95%;
+        margin: 1rem;
+        padding: 1rem 1.5rem;
+      }
+
+      .content h1 {
+        font-size: 1.5rem;
+      }
+
+      .content h2 {
+        font-size: 1.25rem;
+      }
+
+      .content p {
+        font-size: 1rem;
+      }
+
+      .carousel {
+        height: 200px;
+        margin-top: 4rem; /* Adjusted for smaller screens */
+      }
+
+      .dot {
+        width: 8px;
+        height: 8px;
+      }
+
+      .footer {
+        padding: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="logo">
+      <i class="fas fa-ribbon"></i> Blood Cancer Diagnosis
+    </div>
+    <div class="nav-links">
+      <a href="#home"><i class="fas fa-home"></i> Home</a>
+      <a href="#about"><i class="fas fa-info-circle"></i> About</a>
+      <a href="#contact"><i class="fas fa-envelope"></i> Contact</a>
+      <div class="dropdown">
+        <button class="dropdown-btn"><i class="fas fa-user"></i> Login</button>
+        <div class="dropdown-content">
+          <a href="/admin/login"><i class="fas fa-user-shield"></i> Admin Login</a>
+          <a href="/doctor/login"><i class="fas fa-user-md"></i> Doctor Login</a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Scroll Wrapper -->
+  <div class="scroll-wrapper">
+    <!-- Image Carousel -->
+    <div class="carousel">
+      <div class="carousel-slide active">
+        <img src="/static/images/image2.png" alt="Slide 1">
+      </div>
+      <div class="carousel-slide">
+        <img src="/static/images/image1.png" alt="Slide 2">
+      </div>
+      <div class="carousel-slide">
+        <img src="/static/images/image7.png" alt="Slide 3">
+      </div>
+      <div class="carousel-slide">
+        <img src="/static/images/image6.png" alt="Slide 4">
+      </div>
+      <div class="carousel-indicators">
+        <span class="dot active" onclick="currentSlide(1)"></span>
+        <span class="dot" onclick="currentSlide(2)"></span>
+        <span class="dot" onclick="currentSlide(3)"></span>
+        <span class="dot" onclick="currentSlide(4)"></span>
+      </div>
+    </div>
+
+    <!-- Content Sections -->
+    <div class="content">
+      <a id="home"></a>
+      <h1>Welcome to Blood Cancer Diagnosis System</h1>
+      <p>This system uses advanced deep learning techniques to predict blood cancer from microscopic images of cells, offering a revolutionary approach to early detection and diagnosis.</p>
+
+      <a id="about"></a>
+      <h2>About</h2>
+      <p><strong>About This Project:</strong> The Blood Cancer Diagnosis System is a cutting-edge initiative developed to assist medical professionals in identifying leukemia cells using Convolutional Neural Networks (CNN). This project leverages a robust dataset of microscopic blood images, processed through a pre-trained VGG16 model, to provide accurate predictions with high confidence levels. Our goal is to enhance diagnostic efficiency, reduce human error, and support timely treatment decisions. The system includes features for image preprocessing, cancer spot detection, and detailed reporting, making it a valuable tool in the fight against blood cancer.</p>
+      <p>Developed by a team of dedicated data scientists, machine learning engineers, and medical experts, this project aims to bridge the gap between technology and healthcare, offering a scalable solution for global health challenges.</p>
+
+      <a id="contact"></a>
+      <h2>Contact</h2>
+      <p><strong>Contact Us:</strong> We are here to assist you with any inquiries or support related to our system.</p>
+      <p><strong>Email:</strong> bloodcancerdiagnosis@gmail.com</p>
+      <div class="contact-form">
+        <form id="contact-form" method="POST" action="{{ url_for('send_message') }}">
+          <input type="email" name="email" placeholder="Your Email" required>
+          <textarea name="message" placeholder="Your Message" required rows="4"></textarea>
+          <button type="submit">Send Message</button>
+        </form>
+      </div>
+
+      <!-- Footer -->
+      <div class="footer">
+        <h3>Quick Links</h3>
+        <a href="#home">Home</a> | 
+        <a href="#about">About</a> | 
+        <a href="#contact">Contact</a>
+        <p>© 2025 Blood Cancer Diagnosis. All rights reserved.</p>
+        <p>Developed by xAI Team | Privacy Policy | Terms of Service</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Carousel and Form Submission Script -->
+  <script>
+    let slideIndex = 0;
+    const slides = document.getElementsByClassName('carousel-slide');
+    const dots = document.getElementsByClassName('dot');
+
+    function showSlides() {
+      for (let i = 0; i < slides.length; i++) {
+        slides[i].classList.remove('active');
+      }
+      for (let i = 0; i < dots.length; i++) {
+        dots[i].classList.remove('active');
+      }
+
+      slideIndex++;
+      if (slideIndex > slides.length) { slideIndex = 1; }
+
+      slides[slideIndex - 1].classList.add('active');
+      dots[(slideIndex - 1) % dots.length].classList.add('active');
+      setTimeout(showSlides, 4000); // Change slide every 4 seconds
+    }
+
+    function currentSlide(n) {
+      slideIndex = n - 1;
+      showSlides();
+    }
+
+    showSlides();
+
+    document.getElementById('contact-form').addEventListener('submit', function(event) {
+      event.preventDefault();
+      const formData = new FormData(this);
+
+      fetch(this.action, {
+        method: 'POST',
+        body: formData
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          alert('Message sent successfully!');
+          this.reset();
+        } else {
+          alert('Failed to send message. Please try again.');
+        }
+      })
+      .catch(error => {
+        alert('An error occurred. Please try again.');
+        console.error('Error:', error);
+      });
+    });
+  </script>
+</body>
+</html>

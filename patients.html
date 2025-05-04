@@ -1,0 +1,1307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Patients</title>
+  <link rel="icon" type="image/png" href="/static/images/favicon.png">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <!-- Google Fonts (Roboto) -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <!-- jsPDF and html2canvas for PDF generation -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+  <style>
+    body {
+      font-family: 'Roboto', Arial, sans-serif;
+      margin: 0;
+      background: #fff;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      overflow-x: hidden;
+    }
+
+    .navbar {
+      width: 100%;
+      background: #4b0082;
+      padding: 15px 30px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      color: #fff;
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 1000;
+      transition: background 0.3s ease;
+    }
+    .navbar:hover {
+      background: #3a006b;
+    }
+    .navbar .logo-section {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    .navbar .logo-section i {
+      font-size: 2em;
+      color: #e6e6fa;
+    }
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); }
+    }
+    .navbar h2 {
+      margin: 0;
+      font-size: 1.8em;
+      color: #e6e6fa;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+    .navbar .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-left: 485px;
+    }
+    .navbar .nav-links > a {
+      color: #e6e6fa !important;
+      text-decoration: none !important;
+      font-size: 1.1em;
+      padding: 8px 15px;
+      border-radius: 5px;
+      transition: background 0.3s ease, color 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 500;
+      border-bottom: none !important;
+    }
+    .navbar .nav-links > a:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff !important;
+      border-bottom: none !important;
+    }
+    .navbar .nav-links > a.active {
+      background: #3a006b;
+      color: #fff !important;
+    }
+    .profile-dropdown {
+      position: relative;
+    }
+    .profile-dropdown > a {
+      color: #e6e6fa !important;
+      text-decoration: none !important;
+      padding: 8px 15px;
+      border-radius: 5px;
+      transition: background 0.3s ease, color 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 500;
+      border-bottom: none !important;
+    }
+    .profile-dropdown > a:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff !important;
+    }
+    .profile-dropdown .dropdown-content {
+      display: none;
+      position: absolute;
+      right: 0;
+      background: #4b0082;
+      border-radius: 5px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      min-width: 200px;
+      z-index: 1001;
+      opacity: 0;
+      transform: translateY(-10px);
+      transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+    .profile-dropdown:hover .dropdown-content,
+    .profile-dropdown.active .dropdown-content {
+      display: block;
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .profile-dropdown .dropdown-content a {
+      color: #e6e6fa !important;
+      padding: 12px 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1em;
+      text-decoration: none !important;
+      border-bottom: none !important;
+      transition: background 0.3s ease;
+    }
+    .profile-dropdown .dropdown-content a:hover {
+      background: #3a006b;
+    }
+
+    .patients-container {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      margin-top: 25px;
+      max-width: 1600px;
+      width: 95%;
+      animation: fadeIn 0.5s ease-in-out;
+      overflow-x: auto;
+    }
+
+    .header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .top-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn-action {
+      padding: 8px 12px;
+      border: none;
+      border-radius: 6px;
+      background-color: #4b0082;
+      color: white;
+      cursor: pointer;
+      font-size: 0.95em;
+      transition: background 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .btn-action:hover {
+      background-color: #3a006b;
+    }
+
+    h1 {
+      color: #4b0082;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .search-bar {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+    .search-bar input {
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      width: 250px;
+      font-size: 1em;
+    }
+    .search-bar button {
+      padding: 8px 15px;
+      background: #4b0082;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 0.95em;
+      transition: background 0.3s;
+    }
+    .search-bar button:hover {
+      background: #3a006b;
+    }
+    .search-error {
+      color: red;
+      font-size: 0.9em;
+      margin-top: 5px;
+      display: none;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+      min-width: 1200px;
+    }
+
+    th, td {
+      padding: 12px;
+      border: 1px solid #ddd;
+      text-align: left;
+      word-wrap: break-word;
+    }
+
+    th:nth-child(1), td:nth-child(1) { width: 5%; }
+    th:nth-child(2), td:nth-child(2) { width: 10%; }
+    th:nth-child(3), td:nth-child(3) { width: 10%; }
+    th:nth-child(4), td:nth-child(4) { width: 5%; }
+    th:nth-child(5), td:nth-child(5) { width: 5%; }
+    th:nth-child(6), td:nth-child(6) { width: 10%; }
+    th:nth-child(7), td:nth-child(7) { width: 10%; }
+    th:nth-child(8), td:nth-child(8) { width: 15%; }
+    th:nth-child(9), td:nth-child(9) { width: 8%; }
+    th:nth-child(10), td:nth-child(10) { width: 8%; }
+    th:nth-child(11), td:nth-child(11) { width: 5%; }
+    th:nth-child(12), td:nth-child(12) { width: 10%; }
+    th:nth-child(13), td:nth-child(13) { width: 8%; }
+
+    th {
+      background: #4b0082;
+      color: white;
+    }
+
+    tr:nth-child(even) {
+      background: #f2f2f2;
+    }
+
+    .report-btn {
+      padding: 5px 10px;
+      background: #4b0082;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .report-btn:hover {
+      background: #3a006b;
+    }
+
+    .report-form {
+      margin-top: 20px;
+      padding: 15px;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .report-form label {
+      display: block;
+      margin: 10px 0 5px;
+    }
+
+    .report-form input, .report-form select {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    .report-form .form-buttons {
+      display: flex;
+      gap: 10px;
+    }
+
+    .report-form button {
+      padding: 10px 20px;
+      background: #4b0082;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .report-form button:hover {
+      background: #3a006b;
+    }
+
+    .timestamp {
+      font-size: 1em;
+      margin: 10px 0;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 1002;
+      justify-content: center;
+      align-items: center;
+    }
+    .modal-content {
+      background: #fff;
+      padding: 25px;
+      border-radius: 10px;
+      width: 100%;
+      max-width: 400px;
+      text-align: left;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+      position: relative;
+    }
+    .modal-content h3 {
+      color: #4b0082;
+      margin-bottom: 15px;
+      font-size: 1.5em;
+    }
+    .modal-content .input-container {
+      position: relative;
+      margin-bottom: 15px;
+    }
+    .modal-content input {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 1em;
+    }
+    .modal-content .password-toggle {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      cursor: pointer;
+      color: #4b0082;
+    }
+    .modal-content button {
+      padding: 10px 20px;
+      background: #4b0082;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 1em;
+      transition: background 0.3s ease;
+      margin-right: 10px;
+      margin-top: 15px;
+    }
+    .modal-content button:hover {
+      background: #3a006b;
+    }
+    .modal-content .error {
+      color: red;
+      font-size: 0.9em;
+      margin-top: 5px;
+      display: none;
+    }
+    .close-modal {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      font-size: 1.5em;
+      cursor: pointer;
+      color: #4b0082;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 600px) {
+      .patients-container {
+        margin-top: 90px;
+        padding: 20px;
+      }
+      .navbar {
+        padding: 10px 15px;
+        flex-wrap: nowrap;
+      }
+      .navbar .logo-section {
+        gap: 10px;
+      }
+      .navbar .logo-section i {
+        font-size: 1.6em;
+      }
+      .navbar h2 {
+        font-size: 1.4em;
+      }
+      .navbar .nav-links {
+        gap: 8px;
+        margin-left: 20px;
+      }
+      .navbar .nav-links > a {
+        font-size: 0.95em;
+        padding: 6px 10px;
+      }
+      .profile-dropdown > a {
+        font-size: 0.95em;
+        padding: 6px 10px;
+      }
+      .profile-dropdown .dropdown-content {
+        right: -5px;
+        min-width: 140px;
+      }
+      .profile-dropdown .dropdown-content a {
+        padding: 10px 12px;
+        font-size: 0.9em;
+      }
+      th, td {
+        padding: 8px;
+      }
+      .modal-content {
+        padding: 15px;
+      }
+      .modal-content h3 {
+        font-size: 1.2em;
+      }
+      .search-bar input {
+        width: 200px;
+      }
+      .header-row {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .top-actions {
+        margin-top: 10px;
+        width: 100%;
+        justify-content: flex-start;
+      }
+      .report-form .form-buttons {
+        flex-direction: column;
+        gap: 5px;
+      }
+      .report-form button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="navbar">
+  <div class="logo-section">
+    <i class="fas fa-ribbon"></i>
+    <h2>Doctor Dashboard</h2>
+  </div>
+  <div class="nav-links">
+    <a href="{{ url_for('doctor_dashboard') }}" id="home-btn"><i class="fas fa-home"></i> Home</a>
+    <a href="{{ url_for('doctor_about') }}" id="about-btn"><i class="fas fa-info-circle"></i> About</a>
+    <a href="{{ url_for('diagnosis') }}" id="diagnosis-btn"><i class="fas fa-stethoscope"></i> Diagnosis</a>
+    <a href="{{ url_for('patients') }}" id="patients-btn" class="active"><i class="fas fa-users"></i> Patients</a>
+    <a href="{{ url_for('medication') }}" id="medication-btn"><i class="fas fa-prescription-bottle-alt"></i> Medication</a>
+    <div class="profile-dropdown">
+      <a href="#" id="profile-btn"><i class="fas fa-user-circle" style="font-size: 1.5em;"></i></a>
+      <div class="dropdown-content">
+        <a href="{{ url_for('doctor_profile') }}" id="profile-details-btn"><i class="fas fa-user"></i> Profile</a>
+        <a href="#" id="change-password-btn"><i class="fas fa-lock"></i> Change Password</a>
+        <a href="#" id="forgot-password-btn"><i class="fas fa-key"></i> Forgot Password</a>
+        <a href="{{ url_for('logout') }}" id="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="patients-container">
+  <h1>Patients</h1>
+
+  <div class="header-row">
+    <div class="search-bar">
+      <input type="text" id="searchInput" placeholder="Search by patient name..." oninput="searchPatients()">
+      <button onclick="searchPatients()">Search</button>
+      <div id="searchError" class="search-error">Patient is not valid</div>
+    </div>
+    <div class="top-actions">
+      <button class="btn-action" onclick="window.history.back();"><i class="fas fa-arrow-left"></i> Back</button>
+      <button class="btn-action" onclick="window.location.reload();"><i class="fas fa-sync-alt"></i> Refresh</button>
+    </div>
+  </div>
+
+  <table id="patientsTable">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Date & Time</th>
+        <th>Name</th>
+        <th>Age</th>
+        <th>Gender</th>
+        <th>Email</th>
+        <th>Phone</th>
+        <th>Address</th>
+        <th>Diagnosis</th>
+        <th>Confidence</th>
+        <th>Doctor ID</th>
+        <th>Doctor Name</th>
+        <th>Report</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for patient in patients %}
+      <tr>
+        <td>{{ patient['id'] }}</td>
+        <td>{{ patient['timestamp'].strftime('%Y-%m-%d %H:%M:%S') }}</td>
+        <td>{{ patient['name'] }}</td>
+        <td>{{ patient['age'] }}</td>
+        <td>{{ patient['gender'] }}</td>
+        <td>{{ patient['email'] }}</td>
+        <td>{{ patient['phone'] }}</td>
+        <td>{{ patient['address'] }}</td>
+        <td>{{ patient['diagnosis'] }}</td>
+        <td>{{ patient['confidence']|float|round(2) }}%</td>
+        <td>{{ patient['doctor_id'] }}</td>
+        <td>{{ patient['doctor_name'] }}</td>
+        <td>
+          <a href="{{ url_for('download_report', patient_id=patient['id']) }}">
+            <button class="report-btn">Download Report</button>
+          </a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  {% if result_data.prediction %}
+  <div class="report-form">
+    <h2>Add Patient and Generate Report</h2>
+    <div class="timestamp">Current Date & Time: {{ timestamp }}</div>
+    <form id="patientForm">
+      <input type="hidden" name="action" id="formAction">
+      <label for="name">Name:</label>
+      <input type="text" name="name" id="name" required>
+      <label for="age">Age:</label>
+      <input type="number" name="age" id="age" required>
+      <label for="gender">Gender:</label>
+      <select name="gender" id="gender" required>
+        <option value="Male">Male</option>
+        <option value="Female">Female</option>
+        <option value="Other">Other</option>
+      </select>
+      <label for="email">Email:</label>
+      <input type="email" name="email" id="email" required>
+      <label for="phone">Phone:</label>
+      <input type="text" name="phone" id="phone" required>
+      <label for="address">Address:</label>
+      <input type="text" name="address" id="address" required>
+      <label for="diagnosis">Diagnosis:</label>
+      <input type="text" name="diagnosis" id="diagnosis" value="{{ result_data.prediction }}" readonly>
+      <label for="confidence">Confidence:</label>
+      <input type="text" name="confidence" id="confidence" value="{{ result_data.confidence }}" readonly>
+      <div class="form-buttons">
+        <button type="button" onclick="submitForm('save')">Save Patient Details</button>
+        <button type="button" onclick="generatePDF()">Generate Report</button>
+      </div>
+    </form>
+  </div>
+  {% endif %}
+</div>
+
+<div id="changePasswordModal" class="modal">
+  <div class="modal-content">
+    <h3>Change Password</h3>
+    <span class="close-modal" onclick="closeModal('changePasswordModal')">×</span>
+    <div class="input-container">
+      <input type="password" id="currentPassword" placeholder="Current Password" required>
+      <i class="fas fa-eye password-toggle" id="toggleCurrentPassword" onclick="togglePassword('currentPassword')"></i>
+    </div>
+    <div class="input-container">
+      <input type="password" id="newPasswordChange" placeholder="New Password" required>
+      <i class="fas fa-eye password-toggle" id="toggleNewPasswordChange" onclick="togglePassword('newPasswordChange')"></i>
+    </div>
+    <div class="input-container">
+      <input type="password" id="confirmPasswordChange" placeholder="Confirm New Password" required>
+      <i class="fas fa-eye password-toggle" id="toggleConfirmPasswordChange" onclick="togglePassword('confirmPasswordChange')"></i>
+    </div>
+    <div id="changeErrorMessage" class="error">Passwords do not match or current password is incorrect!</div>
+    <button onclick="submitChangePassword()">Submit</button>
+    <button onclick="closeModal('changePasswordModal')">Cancel</button>
+  </div>
+</div>
+
+<div id="forgotPasswordModal" class="modal">
+  <div class="modal-content">
+    <h3>Forgot Password</h3>
+    <span class="close-modal" onclick="closeModal('forgotPasswordModal')">×</span>
+    <div class="input-container">
+      <input type="password" id="oldPassword" placeholder="Old Password" required>
+      <i class="fas fa-eye password-toggle" id="toggleOldPassword" onclick="togglePassword('oldPassword')"></i>
+    </div>
+    <div class="input-container">
+      <input type="password" id="newPassword" placeholder="New Password" required>
+      <i class="fas fa-eye password-toggle" id="toggleNewPassword" onclick="togglePassword('newPassword')"></i>
+    </div>
+    <div class="input-container">
+      <input type="password" id="confirmPassword" placeholder="Confirm New Password" required>
+      <i class="fas fa-eye password-toggle" id="toggleConfirmPassword" onclick="togglePassword('confirmPassword')"></i>
+    </div>
+    <div id="forgotErrorMessage" class="error">Passwords do not match or old password is incorrect!</div>
+    <button onclick="submitForgotPassword()">Submit</button>
+    <button onclick="closeModal('forgotPasswordModal')">Cancel</button>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM fully loaded - Initializing functionality');
+
+    const homeBtn = document.getElementById('home-btn');
+    const aboutBtn = document.getElementById('about-btn');
+    const diagnosisBtn = document.getElementById('diagnosis-btn');
+    const patientsBtn = document.getElementById('patients-btn');
+    const medicationBtn = document.getElementById('medication-btn');
+    const profileBtn = document.getElementById('profile-btn');
+    const profileDropdown = document.querySelector('.profile-dropdown');
+    const dropdownContent = document.querySelector('.dropdown-content');
+    const profileDetailsBtn = document.getElementById('profile-details-btn');
+    const changePasswordBtn = document.getElementById('change-password-btn');
+    const forgotPasswordBtn = document.getElementById('forgot-password-btn');
+    const logoutBtn = document.getElementById('logout-btn');
+    const navLinks = document.querySelectorAll('.navbar .nav-links > a');
+    let isDropdownOpen = false;
+
+    if (!homeBtn || !aboutBtn || !diagnosisBtn || !patientsBtn || !medicationBtn || !profileBtn || !profileDropdown || !dropdownContent) {
+      console.error('One or more navbar elements are missing in the DOM');
+      return;
+    }
+    if (!profileDetailsBtn || !changePasswordBtn || !forgotPasswordBtn || !logoutBtn) {
+      console.error('One or more dropdown buttons are missing in the DOM');
+      return;
+    }
+
+    patientsBtn.classList.add('active');
+    console.log('Patients button set as active by default');
+
+    profileBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      isDropdownOpen = !isDropdownOpen;
+      profileDropdown.classList.toggle('active', isDropdownOpen);
+      dropdownContent.style.display = isDropdownOpen ? 'block' : 'none';
+      console.log(`Profile dropdown toggled: ${isDropdownOpen ? 'Open' : 'Closed'}`);
+    });
+
+    profileDetailsBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      console.log('Profile button clicked - Navigating to profile page');
+      const profileUrl = '{{ url_for("doctor_profile") }}';
+      if (profileUrl) {
+        window.location.href = profileUrl;
+      } else {
+        console.error('Profile URL is not defined');
+        alert('Error: Profile route not found. Please check Flask routes.');
+      }
+      closeDropdown();
+    });
+
+    changePasswordBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      console.log('Change Password button clicked - Opening modal');
+      const modal = document.getElementById('changePasswordModal');
+      if (modal) {
+        modal.style.display = 'flex';
+        document.getElementById('changeErrorMessage').style.display = 'none';
+      } else {
+        console.error('Change Password modal not found in DOM');
+      }
+      closeDropdown();
+    });
+
+    forgotPasswordBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      console.log('Forgot Password button clicked - Opening modal');
+      const modal = document.getElementById('forgotPasswordModal');
+      if (modal) {
+        modal.style.display = 'flex';
+        document.getElementById('forgotErrorMessage').style.display = 'none';
+      } else {
+        console.error('Forgot Password modal not found in DOM');
+      }
+      closeDropdown();
+    });
+
+    logoutBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      console.log('Logout button clicked');
+      if (confirm('Are you sure you want to logout?')) {
+        console.log('Logout confirmed - Redirecting to /logout');
+        window.location.href = '{{ url_for("logout") }}';
+      }
+      closeDropdown();
+    });
+
+    function closeDropdown() {
+      isDropdownOpen = false;
+      profileDropdown.classList.remove('active');
+      dropdownContent.style.display = 'none';
+      console.log('Dropdown closed');
+    }
+
+    navLinks.forEach(link => {
+      link.addEventListener('click', function(e) {
+        const id = this.getAttribute('id');
+        console.log(`Nav link clicked: ${id}`);
+
+        if (id === 'profile-btn') return;
+
+        navLinks.forEach(l => l.classList.remove('active'));
+        this.classList.add('active');
+
+        if (id === 'home-btn') {
+          console.log('Navigating to Home');
+          const homeUrl = '{{ url_for("doctor_dashboard") }}';
+          if (homeUrl) {
+            window.location.href = homeUrl;
+          } else {
+            console.error('Home URL is not defined');
+            alert('Error: Home route not found. Please check Flask routes.');
+          }
+        } else if (id === 'about-btn') {
+          console.log('Navigating to About');
+          const aboutUrl = '{{ url_for("doctor_about") }}';
+          if (aboutUrl) {
+            window.location.href = aboutUrl;
+          } else {
+            console.error('About URL is not defined');
+            alert('Error: About route not found. Please check Flask routes.');
+          }
+        } else if (id === 'diagnosis-btn') {
+          console.log('Navigating to Diagnosis');
+          const diagnosisUrl = '{{ url_for("diagnosis") }}';
+          if (diagnosisUrl) {
+            window.location.href = diagnosisUrl;
+          } else {
+            console.error('Diagnosis URL is not defined');
+            alert('Error: Diagnosis route not found. Please check Flask routes.');
+          }
+        } else if (id === 'patients-btn') {
+          console.log('Navigating to Patients (already on Patients page)');
+        } else if (id === 'medication-btn') {
+          console.log('Navigating to Medication');
+          const medicationUrl = '{{ url_for("medication") }}';
+          if (medicationUrl) {
+            window.location.href = medicationUrl;
+          } else {
+            console.error('Medication URL is not defined');
+            alert('Error: Medication route not found. Please check Flask routes.');
+          }
+        }
+
+        closeDropdown();
+      });
+    });
+
+    function togglePassword(fieldId) {
+      const input = document.getElementById(fieldId);
+      const toggleIcon = document.getElementById(`toggle${fieldId.charAt(0).toUpperCase() + fieldId.slice(1)}`);
+      if (!input || !toggleIcon) {
+        console.error(`Toggle password failed: Element ${fieldId} or toggle icon not found`);
+        return;
+      }
+      if (input.type === 'password') {
+        input.type = 'text';
+        toggleIcon.classList.remove('fa-eye');
+        toggleIcon.classList.add('fa-eye-slash');
+      } else {
+        input.type = 'password';
+        toggleIcon.classList.remove('fa-eye-slash');
+        toggleIcon.classList.add('fa-eye');
+      }
+      console.log(`Password visibility toggled for field: ${fieldId}`);
+    }
+
+    function closeModal(modalId) {
+      const modal = document.getElementById(modalId);
+      if (!modal) {
+        console.error(`Close modal failed: Modal ${modalId} not found`);
+        return;
+      }
+      modal.style.display = 'none';
+      if (modalId === 'changePasswordModal') {
+        document.getElementById('changeErrorMessage').style.display = 'none';
+        document.getElementById('currentPassword').value = '';
+        document.getElementById('newPasswordChange').value = '';
+        document.getElementById('confirmPasswordChange').value = '';
+      } else if (modalId === 'forgotPasswordModal') {
+        document.getElementById('forgotErrorMessage').style.display = 'none';
+        document.getElementById('oldPassword').value = '';
+        document.getElementById('newPassword').value = '';
+        document.getElementById('confirmPassword').value = '';
+      }
+      console.log(`Modal closed: ${modalId}`);
+    }
+
+    function submitChangePassword() {
+      const currentPassword = document.getElementById('currentPassword').value;
+      const newPassword = document.getElementById('newPasswordChange').value;
+      const confirmPassword = document.getElementById('confirmPasswordChange').value;
+      const errorMessage = document.getElementById('changeErrorMessage');
+
+      if (!currentPassword || !newPassword || !confirmPassword) {
+        errorMessage.textContent = 'Please fill in all fields!';
+        errorMessage.style.display = 'block';
+        console.log('Change Password failed: Missing fields');
+        return;
+      }
+
+      if (newPassword !== confirmPassword) {
+        errorMessage.textContent = 'New password and confirmation do not match!';
+        errorMessage.style.display = 'block';
+        console.log('Change Password failed: Passwords do not match');
+        return;
+      }
+
+      console.log('Submitting change password request');
+      fetch('/doctor/change_password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ current_password: currentPassword, new_password: newPassword, confirm_password: confirmPassword })
+      })
+      .then(response => {
+        if (!response.ok) throw new Error('Network response was not ok');
+        return response.json();
+      })
+      .then(data => {
+        if (data.success) {
+          console.log('Password changed successfully');
+          alert('Password changed successfully!');
+          closeModal('changePasswordModal');
+        } else {
+          console.error(`Change Password failed: ${data.message}`);
+          errorMessage.textContent = data.message || 'Error changing password';
+          errorMessage.style.display = 'block';
+        }
+      })
+      .catch(error => {
+        console.error(`Fetch error during change password: ${error}`);
+        errorMessage.textContent = `Error: ${error.message}`;
+        errorMessage.style.display = 'block';
+      });
+    }
+
+    function submitForgotPassword() {
+      const oldPassword = document.getElementById('oldPassword').value;
+      const newPassword = document.getElementById('newPassword').value;
+      const confirmPassword = document.getElementById('confirmPassword').value;
+      const errorMessage = document.getElementById('forgotErrorMessage');
+
+      if (!oldPassword || !newPassword || !confirmPassword) {
+        errorMessage.textContent = 'Please fill in all fields!';
+        errorMessage.style.display = 'block';
+        console.log('Forgot Password failed: Missing fields');
+        return;
+      }
+
+      if (newPassword !== confirmPassword) {
+        errorMessage.textContent = 'New password and confirmation do not match!';
+        errorMessage.style.display = 'block';
+        console.log('Forgot Password failed: Passwords do not match');
+        return;
+      }
+
+      console.log('Submitting forgot password request');
+      fetch('/doctor/forgot_password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ old_password: oldPassword, new_password: newPassword, confirm_password: confirmPassword })
+      })
+      .then(response => {
+        if (!response.ok) throw new Error('Network response was not ok');
+        return response.json();
+      })
+      .then(data => {
+        if (data.success) {
+          console.log('Password updated successfully');
+          alert('Password updated successfully!');
+          closeModal('forgotPasswordModal');
+        } else {
+          console.error(`Forgot Password failed: ${data.message}`);
+          errorMessage.textContent = data.message || 'Error updating password';
+          errorMessage.style.display = "block";
+        }
+      })
+      .catch(error => {
+        console.error(`Fetch error during forgot password: ${error}`);
+        errorMessage.textContent = `Error: ${error.message}`;
+        errorMessage.style.display = 'block';
+      });
+    }
+
+    function searchPatients() {
+      const searchInput = document.getElementById('searchInput').value.toLowerCase();
+      const table = document.getElementById('patientsTable');
+      const rows = table.getElementsByTagName('tr');
+      const errorMessage = document.getElementById('searchError');
+      let matchFound = false;
+
+      for (let i = 1; i < rows.length; i++) {
+        const nameCell = rows[i].getElementsByTagName('td')[2];
+        if (nameCell) {
+          const name = nameCell.textContent.toLowerCase();
+          if (name.includes(searchInput)) {
+            rows[i].style.display = '';
+            matchFound = true;
+          } else {
+            rows[i].style.display = 'none';
+          }
+        }
+      }
+
+      if (!matchFound && searchInput) {
+        errorMessage.style.display = 'block';
+      } else {
+        errorMessage.style.display = 'none';
+      }
+
+      console.log(`Search executed for: ${searchInput}, Match found: ${matchFound}`);
+    }
+
+    function submitForm(action) {
+      const form = document.getElementById('patientForm');
+      const formAction = document.getElementById('formAction');
+      if (!form || !formAction) {
+        console.error('Form or form action element not found');
+        return;
+      }
+
+      formAction.value = action;
+      console.log(`Submitting form with action: ${action}`);
+
+      const inputs = form.querySelectorAll('input[required], select[required]');
+      let isValid = true;
+      inputs.forEach(input => {
+        if (!input.value) {
+          isValid = false;
+          input.style.borderColor = 'red';
+        } else {
+          input.style.borderColor = '#ccc';
+        }
+      });
+
+      if (!isValid) {
+        alert('Please fill in all required fields.');
+        console.log('Form submission failed: Missing required fields');
+        return;
+      }
+
+      if (action === 'save') {
+        form.action = '{{ url_for("patients") }}';
+        form.method = 'post';
+        form.submit();
+        console.log('Form submitted to save patient details');
+      }
+    }
+
+    async function generatePDF() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: 'a4'
+      });
+
+      // Layout constants
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const pageHeight = doc.internal.pageSize.getHeight();
+      const margin = 20;
+      const contentWidth = 170;
+      const lineHeight = 7;
+      const sectionSpacing = 10;
+      let currentY = margin;
+      let pageNumber = 1;
+
+      // Form data
+      const date = document.querySelector('.timestamp').textContent.replace('Current Date & Time: ', '') || new Date().toLocaleString();
+      const patient_name = document.getElementById('name').value || 'John Doe';
+      const patient_age = document.getElementById('age').value || 'Unknown';
+      const patient_gender = document.getElementById('gender').value || 'Unknown';
+      const result_data = {
+        prediction: document.getElementById('diagnosis').value || 'Unknown',
+        confidence: parseFloat(document.getElementById('confidence').value) || 0,
+        original_img_path: '{{ result_data.original_img_path | default("") }}',
+        cancer_marking_path: '{{ result_data.cancer_marking_path | default("") }}'
+      };
+      const patient_id = '{{ patient_id | default("12345") }}';
+      const doctor_id = '{{ session.doctor_id | default("Unknown") }}';
+      const doctor_name = '{{ session.doctor_username | default("Unknown") }}';
+
+      // Helper: Fetch image as base64
+      async function fetchImageAsBase64(url) {
+        if (!url || url === '') return null;
+        try {
+          const response = await fetch(url, { mode: 'cors' });
+          if (!response.ok) throw new Error(`Failed to fetch image: ${response.statusText}`);
+          const blob = await response.blob();
+          return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result);
+            reader.readAsDataURL(blob);
+          });
+        } catch (error) {
+          console.error(`Error fetching image ${url}: ${error}`);
+          return null;
+        }
+      }
+
+      // Helper: Add header
+      function addHeader() {
+        doc.setFontSize(18);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(75, 0, 130); // #4b0082
+        doc.text('Blood Cancer Diagnosis Report', pageWidth / 2, currentY, { align: 'center' });
+        currentY += 7;
+        doc.setFontSize(10);
+        doc.setTextColor(102); // #666
+        doc.text(`Generated on ${date}`, pageWidth / 2, currentY, { align: 'center' });
+        currentY += 5;
+        doc.text('Doctor Dashboard Medical Center', pageWidth / 2, currentY, { align: 'center' });
+        currentY += 5;
+        doc.setLineWidth(0.5);
+        doc.setDrawColor(75, 0, 130); // #4b0082
+        doc.line(margin, currentY, margin + contentWidth, currentY);
+        currentY += sectionSpacing;
+      }
+
+      // Helper: Add footer
+      function addFooter() {
+        doc.setFontSize(10);
+        doc.setTextColor(102); // #666
+        doc.setFont('helvetica', 'normal');
+        doc.text(`Doctor Dashboard Medical Center | Contact: support@doctordashboard.com | Phone: (123) 456-7890`, pageWidth / 2, pageHeight - 15, { align: 'center' });
+        doc.text('Confidential: For medical professional use only.', pageWidth / 2, pageHeight - 10, { align: 'center' });
+        doc.text(`${pageNumber} of ${doc.getNumberOfPages()}`, pageWidth / 2, pageHeight - 5, { align: 'center' });
+      }
+
+      // Helper: Check page break
+      function checkPageBreak(spaceNeeded) {
+        if (currentY + spaceNeeded > pageHeight - 30) {
+          doc.addPage();
+          pageNumber++;
+          currentY = margin;
+          addHeader();
+          addFooter();
+        }
+      }
+
+      // Helper: Add section title
+      function addSectionTitle(title) {
+        checkPageBreak(20);
+        doc.setFontSize(14);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(75, 0, 130); // #4b0082
+        doc.text(title, margin, currentY);
+        currentY += 5;
+        doc.setLineWidth(0.2);
+        doc.setDrawColor(221); // #ddd
+        doc.line(margin, currentY, margin + contentWidth, currentY);
+        currentY += sectionSpacing;
+      }
+
+      // Helper: Draw patient info table
+      function drawPatientInfoTable() {
+        const tableData = [
+          { key: 'Name', value: patient_name },
+          { key: 'Patient ID', value: patient_id },
+          { key: 'Age', value: patient_age },
+          { key: 'Gender', value: patient_gender },
+          { key: 'Date of Analysis', value: date },
+          { key: 'Doctor ID', value: doctor_id },
+          { key: 'Doctor Name', value: doctor_name }
+        ];
+        const rowHeight = 10;
+        const keyWidth = contentWidth * 0.3;
+        const valueWidth = contentWidth * 0.7;
+
+        tableData.forEach((row, index) => {
+          checkPageBreak(rowHeight);
+          doc.setFillColor(242); // #f2f2f2
+          doc.rect(margin, currentY, keyWidth, rowHeight, 'F');
+          doc.setDrawColor(221); // #ddd
+          doc.rect(margin, currentY, keyWidth, rowHeight);
+          doc.setFontSize(12);
+          doc.setFont('helvetica', 'bold');
+          doc.setTextColor(51); // #333
+          doc.text(row.key, margin + 2, currentY + 7);
+
+          doc.rect(margin + keyWidth, currentY, valueWidth, rowHeight);
+          doc.setFont('helvetica', 'normal');
+          const valueLines = doc.splitTextToSize(row.value, valueWidth - 4);
+          doc.text(valueLines, margin + keyWidth + 2, currentY + 7);
+          currentY += rowHeight;
+        });
+        currentY += sectionSpacing;
+      }
+
+      // Helper: Add diagnosis summary
+      function addDiagnosisSummary() {
+        checkPageBreak(30);
+        doc.setFontSize(8); // Reduced from 10 to 8
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(51); // #333
+        doc.text('Classification Result:', margin, currentY);
+        doc.setFont('helvetica', 'bold');
+        if (result_data.prediction === 'Benign') {
+          doc.setTextColor(40, 167, 69); // #28a745
+        } else if (result_data.prediction === 'Uncertain') {
+          doc.setTextColor(255, 193, 7); // #ffc107
+        } else {
+          doc.setTextColor(220, 53, 69); // #dc3545
+        }
+        doc.text(result_data.prediction, margin + 50, currentY);
+        currentY += lineHeight;
+
+        doc.setTextColor(51); // #333
+        doc.setFont('helvetica', 'bold');
+        doc.text('Confidence:', margin, currentY);
+        doc.setFont('helvetica', 'normal');
+        const confidenceText = `${(result_data.confidence * 100).toFixed(2)}%`;
+        doc.text(confidenceText, margin + 50, currentY);
+        currentY += sectionSpacing;
+      }
+
+      // Helper: Add visual evidence
+      async function addVisualEvidence() {
+        checkPageBreak(70);
+        doc.setFontSize(12);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(75, 0, 130); // #4b0082
+        doc.text('Visual Evidence', margin, currentY);
+        currentY += 5;
+
+        const imgWidth = 60;
+        const imgHeight = 45;
+        let hasOriginal = false;
+        let hasCancer = false;
+
+        // Fetch images
+        const originalImgData = result_data.original_img_path ? await fetchImageAsBase64(result_data.original_img_path) : null;
+        const cancerImgData = result_data.cancer_marking_path ? await fetchImageAsBase64(result_data.cancer_marking_path) : null;
+
+        // Render Input Image
+        if (originalImgData) {
+          try {
+            doc.addImage(originalImgData, 'JPEG', margin, currentY, imgWidth, imgHeight);
+            hasOriginal = true;
+          } catch (error) {
+            console.error(`Error adding input image: ${error}`);
+            doc.setFontSize(10);
+            doc.setFont('helvetica', 'normal');
+            doc.setTextColor(220, 53, 69); // #dc3545
+            doc.text('Error: Unable to load Input Image.', margin, currentY + 5);
+          }
+        } else {
+          doc.setFontSize(10);
+          doc.setFont('helvetica', 'normal');
+          doc.setTextColor(220, 53, 69); // #dc3545
+          doc.text('Error: Input Image not available.', margin, currentY + 5);
+        }
+
+        // Render Cancer Detected Image
+        if (cancerImgData) {
+          try {
+            doc.addImage(cancerImgData, 'JPEG', margin + 65, currentY, imgWidth, imgHeight);
+            hasCancer = true;
+          } catch (error) {
+            console.error(`Error adding cancer detected image: ${error}`);
+            doc.setFontSize(10);
+            doc.setFont('helvetica', 'normal');
+            doc.setTextColor(220, 53, 69); // #dc3545
+            doc.text('Error: Unable to load Cancer Detected Image.', margin + 65, currentY + 5);
+          }
+        } else if (result_data.cancer_marking_path) {
+          doc.setFontSize(10);
+          doc.setFont('helvetica', 'normal');
+          doc.setTextColor(220, 53, 69); // #dc3545
+          doc.text('Error: Cancer Detected Image not available.', margin + 65, currentY + 5);
+        }
+
+        // Adjust Y position based on images rendered
+        if (hasOriginal || hasCancer) {
+          currentY += imgHeight + 5;
+        } else {
+          currentY += lineHeight + 5;
+        }
+        currentY += sectionSpacing;
+      }
+
+      // Helper: Add treatment recommendations
+      function addTreatmentRecommendations() {
+        checkPageBreak(30);
+        const treatmentText = 'Please consult a qualified hematologist or oncologist for a personalized treatment plan based on the diagnosis.';
+        doc.setFontSize(12);
+        doc.setFont('helvetica', 'normal');
+        doc.setTextColor(51); // #333
+        const treatmentLines = doc.splitTextToSize(treatmentText, contentWidth);
+        doc.text(treatmentLines, margin, currentY);
+        currentY += lineHeight * treatmentLines.length + sectionSpacing;
+      }
+
+      // Helper: Add medical notes
+      function addMedicalNotes() {
+        checkPageBreak(50);
+        const notes = [
+          'This report is generated based on automated analysis of blood sample images. Results should be reviewed by a qualified hematologist or oncologist. Additional tests, such as flow cytometry, cytogenetic analysis, or molecular testing, may be required to confirm the diagnosis.',
+          'For malignant cases, consult a multidisciplinary team to develop a personalized treatment plan. For benign cases, monitor patient health with regular follow-ups.'
+        ];
+        doc.setFontSize(12);
+        doc.setFont('helvetica', 'normal');
+        doc.setTextColor(51); // #333
+        notes.forEach(note => {
+          const noteLines = doc.splitTextToSize(note, contentWidth);
+          doc.text(noteLines, margin, currentY);
+          currentY += lineHeight * noteLines.length + 2;
+        });
+        currentY += sectionSpacing;
+      }
+
+      // Build report
+      addHeader();
+      addFooter();
+
+      addSectionTitle('Patient Information');
+      drawPatientInfoTable();
+
+      addSectionTitle('Diagnosis Summary');
+      addDiagnosisSummary();
+
+      addSectionTitle('Visual Evidence');
+      await addVisualEvidence();
+
+      addSectionTitle('Treatment Recommendations');
+      addTreatmentRecommendations();
+
+      addSectionTitle('Medical Notes');
+      addMedicalNotes();
+
+      // Save PDF
+      const fileName = `Blood_Cancer_Report_${patient_name.replace(/\s+/g, '_') || 'Unknown'}_${new Date().toISOString().split('T')[0]}.pdf`;
+      doc.save(fileName);
+      console.log(`PDF generated and downloaded: ${fileName}`);
+    }
+
+    window.addEventListener('click', function(e) {
+      if (!e.target.closest('.profile-dropdown') && !profileDropdown.contains(e.target)) {
+        closeDropdown();
+      }
+      if (e.target.className === 'modal') {
+        closeModal('changePasswordModal');
+        closeModal('forgotPasswordModal');
+      }
+    });
+
+    document.querySelectorAll('.close-modal').forEach(button => {
+      button.addEventListener('click', function() {
+        const modalId = this.getAttribute('onclick').match(/'([^']+)'/)[1];
+        closeModal(modalId);
+      });
+    });
+
+    window.togglePassword = togglePassword;
+    window.closeModal = closeModal;
+    window.submitChangePassword = submitChangePassword;
+    window.submitForgotPassword = submitForgotPassword;
+    window.submitForm = submitForm;
+    window.searchPatients = searchPatients;
+    window.generatePDF = generatePDF;
+
+    console.log('JavaScript fully initialized');
+  });
+</script>
+
+</body>
+</html>

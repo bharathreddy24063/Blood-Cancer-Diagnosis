@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Edit Doctor</title>
+  <link rel="icon" type="image/png" href="/static/images/favicon.png">
+  <!-- Google Fonts (Roboto) -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+      margin: 0;
+      background-color: #f9fafb;
+      color: #374151;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .navbar {
+      background-color: #4b0082;
+      padding: 0.85rem 1rem;
+      display: flex;
+      align-items: center;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 50;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      justify-content: space-between;
+      font-family: sans-serif;
+    }
+
+    .navbar .logo-section {
+      display: flex;
+      align-items: center;
+      color: #fff;
+      font-weight: 700;
+      font-size: 1.5rem;
+      margin-left: 1rem;
+    }
+
+    .navbar .logo-section i {
+      margin-right: 0.5rem;
+      transform: none;
+      font-size: 1.5rem;
+    }
+
+    .navbar .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+      flex-shrink: 0;
+      margin-right: 2rem;
+    }
+
+    .navbar .nav-links a {
+      color: #fff;
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 1rem;
+      padding: 0.5rem 0.9rem;
+      border-radius: 0.375rem;
+      transition: background-color 0.3s ease, transform 0.3s ease;
+      display: flex;
+      align-items: center;
+      white-space: nowrap;
+      flex-shrink: 0;
+      cursor: pointer;
+    }
+
+    .navbar .nav-links a i {
+      margin-right: 0.5rem;
+    }
+
+    .navbar .nav-links a:hover {
+      background-color: rgba(255, 255, 255, 0.2);
+      transform: scale(1.05);
+    }
+
+    .navbar .nav-links .logout-btn {
+      margin-left: 0;
+    }
+
+    .container {
+      margin-top: 4rem;
+      padding: 2rem;
+      max-width: 600px;
+      width: 100%;
+      margin-left: auto;
+      margin-right: auto;
+      flex: 1 0 auto;
+    }
+
+    h2 {
+      font-size: 1.875rem;
+      font-weight: 700;
+      color: #4b0082;
+      margin-bottom: 1.5rem;
+      text-align: center;
+    }
+
+    .form-group {
+      margin-bottom: 1rem;
+    }
+
+    .form-group label {
+      display: block;
+      font-weight: 500;
+      color: #4b0082;
+      margin-bottom: 0.25rem;
+    }
+
+    .form-group input,
+    .form-group textarea {
+      width: 100%;
+      padding: 0.5rem;
+      border: 1px solid #d1d5db;
+      border-radius: 0.375rem;
+      transition: border-color 0.3s ease;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: #4b0082;
+      box-shadow: 0 0 0 2px rgba(75, 0, 130, 0.2);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      border-radius: 0.375rem;
+      text-decoration: none;
+      transition: background-color 0.3s ease, transform 0.3s ease;
+      cursor: pointer;
+      border: none;
+      font-size: 1rem;
+    }
+
+    .btn-primary {
+      background-color: #4b0082;
+      color: #fff;
+    }
+
+    .btn-primary:hover {
+      background-color: #3a0062;
+      transform: scale(1.05);
+    }
+
+    .btn-secondary {
+      background-color: #f97316;
+      color: #fff;
+      margin-left: 1rem;
+    }
+
+    .btn-secondary:hover {
+      background-color: #ea580c;
+      transform: scale(1.05);
+    }
+
+    .alert {
+      padding: 0.75rem;
+      margin-bottom: 1rem;
+      border-radius: 0.375rem;
+      text-align: center;
+    }
+
+    .alert-success {
+      background-color: #d1fae5;
+      color: #065f46;
+    }
+
+    .alert-error {
+      background-color: #fee2e2;
+      color: #991b1b;
+    }
+
+    @media (max-width: 640px) {
+      .navbar {
+        padding: 0.5rem 1.5rem;
+      }
+
+      .navbar .logo-section {
+        font-size: 1.25rem;
+      }
+
+      .navbar .logo-section i {
+        font-size: 1.25rem;
+      }
+
+      .navbar .nav-links {
+        gap: 0.25rem;
+      }
+
+      .navbar .nav-links a {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.5rem;
+      }
+
+      .container {
+        padding: 1rem;
+        margin-top: 3.5rem;
+      }
+
+      h2 {
+        font-size: 1.5rem;
+      }
+
+      .btn {
+        font-size: 0.9rem;
+        padding: 0.4rem 0.8rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="logo-section">
+      <i class="fas fa-ribbon"></i> Blood Cancer Diagnosis
+    </div>
+    <div class="nav-links">
+      <a href="{{ url_for('admin_dashboard') }}" id="home-btn"><i class="fas fa-home"></i> Home</a>
+      <a href="{{ url_for('admin_dashboard') }}#messages-section" id="messages-btn"><i class="fab fa-facebook-messenger"></i> Messages</a>
+      <a href="{{ url_for('admin_dashboard') }}#new-doctor-section" id="new-doctor-btn"><i class="fas fa-user-plus"></i> New Doctor</a>
+      <a href="{{ url_for('admin_dashboard') }}#doctors-list-section" id="doctors-list-btn"><i class="fas fa-users"></i> Doctors List</a>
+      <a href="{{ url_for('admin_dashboard') }}#performance-section" id="performance-btn"><i class="fas fa-chart-bar"></i> Performance</a>
+      <a href="{{ url_for('logout') }}" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+    </div>
+  </nav>
+
+  <!-- Main Container -->
+  <div class="container">
+    <h2><i class="fas fa-user-edit"></i> Edit Doctor</h2>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ 'success' if category == 'success' else 'error' }}">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+    <form method="POST" class="space-y-4">
+      <div class="form-group">
+        <label>Doctor ID</label>
+        <input type="text" name="doctor_id" value="{{ doctor.doctor_id if doctor.doctor_id else '' }}" required>
+      </div>
+      <div class="form-group">
+        <label>Doctor Name</label>
+        <input type="text" name="doctor_name" value="{{ doctor.doctor_name if doctor.doctor_name else '' }}" required>
+      </div>
+      <div class="form-group">
+        <label>Age</label>
+        <input type="number" name="age" value="{{ doctor.age if doctor.age else '' }}" required>
+      </div>
+      <div class="form-group">
+        <label>Date of Birth</label>
+        <input type="date" name="dob" value="{{ doctor.dob.strftime('%Y-%m-%d') if doctor.dob else '' }}" required>
+      </div>
+      <div class="form-group">
+        <label>Mobile Number</label>
+        <input type="tel" name="mobile_number" value="{{ doctor.mobile_number if doctor.mobile_number else '' }}" required>
+      </div>
+      <div class="form-group">
+        <label>Gmail</label>
+        <input type="email" name="gmail" value="{{ doctor.gmail if doctor.gmail else '' }}" required>
+      </div>
+      <div class="form-group">
+        <label>Aadhaar Number</label>
+        <input type="text" name="aadhaar_number" value="{{ doctor.aadhaar_number if doctor.aadhaar_number else '' }}" required>
+      </div>
+      <div class="form-group">
+        <label>Hospital Name</label>
+        <input type="text" name="hospital_name" value="{{ doctor.hospital_name if doctor.hospital_name else '' }}" required>
+      </div>
+      <div class="form-group">
+        <label>Hospital Address</label>
+        <textarea name="hospital_address" required rows="3">{{ doctor.hospital_address if doctor.hospital_address else '' }}</textarea>
+      </div>
+      <div class="form-group">
+        <label>Password (leave blank to keep current)</label>
+        <input type="password" name="password">
+      </div>
+      <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Save Changes</button>
+      <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary"><i class="fas fa-times"></i> Cancel</a>
+    </form>
+  </div>
+
+  <script>
+    // No timer-related code needed
+  </script>
+</body>
+</html>

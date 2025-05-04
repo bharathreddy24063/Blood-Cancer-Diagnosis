@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><text y='50%' x='50%' text-anchor='middle' dominant-baseline='central' font-size='48'>🩸</text></svg>">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!-- Google Fonts (Roboto) -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            /* No overflow: hidden to allow body scrolling */
+        }
+
+        body {
+            font-family: 'Roboto', Arial, sans-serif;
+            background-color: #f9fafb;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            overflow-y: auto; /* Enable vertical scrollbar for the body only */
+        }
+
+        html, body {
+            height: 100%;
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+        
+        /* Hide scrollbar for Webkit browsers (Chrome, Safari, Edge) */
+        body::-webkit-scrollbar {
+            display: none;
+        }
+    
+        /* Navbar Styles */
+        .navbar {
+            width: 100%;
+            background: #4b0082;
+            padding: 15px 30px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            color: #fff;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            transition: background 0.3s ease;
+        }
+        .navbar:hover {
+            background: #3a006b;
+        }
+        .navbar .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .navbar .logo-section i {
+            font-size: 2em;
+            color: #e6e6fa;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        .navbar h2 {
+            margin: 0;
+            font-size: 1.8em;
+            color: #e6e6fa;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+        .navbar .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-left: 485px;
+        }
+        .navbar .nav-links > a {
+            color: #e6e6fa !important;
+            text-decoration: none !important;
+            font-size: 1.1em;
+            padding: 8px 15px;
+            border-radius: 5px;
+            transition: background 0.3s ease, color 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+            border-bottom: none !important;
+        }
+        .navbar .nav-links > a:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff !important;
+            border-bottom: none !important;
+        }
+        .navbar .nav-links > a.active {
+            background: #3a006b;
+            color: #fff !important;
+        }
+        .profile-dropdown {
+            position: relative;
+        }
+        .profile-dropdown > a {
+            color: #e6e6fa !important;
+            text-decoration: none !important;
+            padding: 8px 15px;
+            border-radius: 5px;
+            transition: background 0.3s ease, color 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+            border-bottom: none !important;
+        }
+        .profile-dropdown > a:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff !important;
+        }
+        .profile-dropdown .dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            background: #4b0082;
+            border-radius: 5px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            min-width: 200px;
+            z-index: 1001;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: opacity 0.2s ease, transform 0.2s ease;
+        }
+        .profile-dropdown:hover .dropdown-content,
+        .profile-dropdown.active .dropdown-content {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .profile-dropdown .dropdown-content a {
+            color: #e6e6fa !important;
+            padding: 12px 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1em;
+            text-decoration: none !important;
+            border-bottom: none !important;
+            transition: background 0.3s ease;
+        }
+        .profile-dropdown .dropdown-content a:hover {
+            background: #3a006b;
+        }
+
+        /* Scrollable Content Wrapper */
+        .content-wrapper {
+            flex: 1;
+            width: 100%;
+            padding-top: 80px; /* Space for fixed navbar */
+            padding-bottom: 40px; /* Reduced space for smaller footer */
+            box-sizing: border-box;
+            display: flex;
+            justify-content: center;
+        }
+
+        /* About Container */
+        .about-container {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(5px);
+            padding: 30px; /* Reduced padding for more content space */
+            border-radius: 15px;
+            box-shadow: 0 6px 25px rgba(75, 0, 130, 0.2);
+            margin: 20px 0; /* Margin to ensure spacing within the scrollable area */
+            max-width: 900px; /* Increased max-width for better space utilization */
+            width: 90%;
+            text-align: center;
+            animation: fadeIn 0.6s ease-in-out;
+            border: 1px solid rgba(75, 0, 130, 0.1);
+        }
+        h1 {
+            color: #4b0082;
+            font-size: 2.3em;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+        h3 {
+            color: #4b0082;
+            font-size: 1.5em;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        .about-box {
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        .about-box p {
+            color: #333;
+            font-size: 1.1em;
+            line-height: 1.7;
+            margin: 5px 0;
+        }
+        .about-box strong {
+            color: #4b0082;
+        }
+
+        /* Footer Styles */
+        .footer {
+            background: #4b0082;
+            color: #e6e6fa;
+            padding: 10px 20px; /* Reduced padding for smaller footer */
+            text-align: center;
+            width: 100%;
+            font-size: 0.85em; /* Reduced font size */
+            font-weight: 500;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+            position: fixed; /* Fix the footer at the bottom */
+            bottom: 0;
+            left: 0;
+            z-index: 1000;
+            overflow: hidden; /* Prevent scrollbar on footer */
+        }
+        .footer .footer-links {
+            margin-top: 3px; /* Reduced margin for compactness */
+        }
+        .footer a {
+            color: #e6e6fa;
+            text-decoration: underline;
+            margin: 0 8px; /* Slightly reduced margin */
+            transition: color 0.3s ease;
+        }
+        .footer a:hover {
+            color: #fff;
+        }
+        .footer .social-icons a {
+            margin: 0 6px; /* Reduced margin for icons */
+            font-size: 1em; /* Reduced icon size */
+        }
+
+        /* Animation */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 600px) {
+            .content-wrapper {
+                padding-top: 60px; /* Adjust for smaller navbar height */
+                padding-bottom: 30px; /* Further reduced for smaller footer */
+            }
+            .navbar {
+                padding: 10px 15px;
+            }
+            .navbar .logo-section i {
+                font-size: 1.6em;
+            }
+            .navbar h2 {
+                font-size: 1.4em;
+            }
+            .navbar .nav-links {
+                gap: 8px;
+                margin-left: 20px;
+            }
+            .navbar .nav-links > a {
+                font-size: 0.95em;
+                padding: 6px 10px;
+            }
+            .profile-dropdown > a {
+                font-size: 0.95em;
+                padding: 6px 10px;
+            }
+            .profile-dropdown .dropdown-content {
+                right: -5px;
+                min-width: 140px;
+            }
+            .profile-dropdown .dropdown-content a {
+                padding: 10px 12px;
+                font-size: 0.9em;
+            }
+            .about-container {
+                padding: 20px; /* Adjusted padding for mobile */
+                width: 95%;
+            }
+            h1 {
+                font-size: 1.8em;
+            }
+            h3 {
+                font-size: 1.3em;
+            }
+            .about-box {
+                padding: 15px;
+            }
+            .about-box p {
+                font-size: 1em;
+            }
+            .footer {
+                padding: 8px 12px; /* Further reduced for mobile */
+                font-size: 0.75em; /* Smaller font size for mobile */
+            }
+            .footer .social-icons a {
+                margin: 0 4px; /* Adjusted for mobile */
+                font-size: 0.9em; /* Smaller icons for mobile */
+            }
+        }
+
+        /* Custom Scrollbar Styling for Body */
+        body::-webkit-scrollbar {
+            width: 8px;
+        }
+        body::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        body::-webkit-scrollbar-thumb {
+            background: #4b0082;
+            border-radius: 4px;
+        }
+        body::-webkit-scrollbar-thumb:hover {
+            background: #3a006b;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1002;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background: #fff;
+            padding: 25px;
+            border-radius: 10px;
+            width: 100%;
+            max-width: 400px;
+            text-align: left;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+        .modal-content h3 {
+            color: #4b0082;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+        .modal-content .input-container {
+            position: relative;
+            margin-bottom: 15px;
+        }
+        .modal-content input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1em;
+        }
+        .modal-content .password-toggle {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #4b0082;
+        }
+        .modal-content button {
+            padding: 10px 20px;
+            background: #4b0082;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background 0.3s ease;
+            margin-right: 10px;
+            margin-top: 15px;
+        }
+        .modal-content button:hover {
+            background: #3a006b;
+        }
+        .modal-content .error {
+            color: red;
+            font-size: 0.9em;
+            margin-top: 5px;
+            display: none;
+        }
+        .close-modal {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 1.5em;
+            cursor: pointer;
+            color: #4b0082;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <div class="navbar">
+        <div class="logo-section">
+            <i class="fas fa-ribbon"></i>
+            <h2>Doctor Dashboard</h2>
+        </div>
+        <div class="nav-links">
+            <a href="{{ url_for('doctor_dashboard') }}" id="home-btn" class="active"><i class="fas fa-home"></i> Home</a>
+            <a href="{{ url_for('doctor_about') }}" id="about-btn"><i class="fas fa-info-circle"></i> About</a>
+            <a href="{{ url_for('diagnosis') }}" id="diagnosis-btn"><i class="fas fa-stethoscope"></i> Diagnosis</a>
+            <a href="{{ url_for('patients') }}" id="patients-btn"><i class="fas fa-users"></i> Patients</a>
+            <a href="{{ url_for('medication') }}" id="medication-btn"><i class="fas fa-prescription-bottle-alt"></i> Medication</a>
+            <div class="profile-dropdown">
+                <a href="#" id="profile-btn"><i class="fas fa-user-circle" style="font-size: 1.5em;"></i></a>
+                <div class="dropdown-content">
+                    <a href="{{ url_for('doctor_profile') }}" id="profile-details-btn"><i class="fas fa-user"></i> Profile</a>
+                    <a href="#" id="change-password-btn"><i class="fas fa-lock"></i> Change Password</a>
+                    <a href="#" id="forgot-password-btn"><i class="fas fa-key"></i> Forgot Password</a>
+                    <a href="{{ url_for('logout') }}" id="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scrollable Content Wrapper -->
+    <div class="content-wrapper">
+        <!-- Medication Content -->
+        <div class="about-container" id="medication-content">
+            <h1>Medication</h1>
+            <div class="about-box">
+                <h3>Benign Blood Conditions</h3>
+                <p><strong>What It Is:</strong> These are not cancers but conditions that might lead to cancer later, like monoclonal gammopathy of undetermined significance (MGUS). In MGUS, your body makes too many of a certain protein, but you usually don’t feel sick.</p>
+                <p><strong>Medicines:</strong> You don’t usually need medicines for MGUS. Doctors will just watch you closely with blood tests every few months to see if it turns into cancer. If you have bone pain or low blood counts (anemia), they might give you medicines like bisphosphonates (e.g., zoledronic acid) to make your bones stronger.</p>
+                <p><strong>Do’s:</strong> Go for your check-ups regularly. Eat healthy foods like fruits, vegetables, and whole grains to keep your body strong. Drink plenty of water to help your kidneys handle the extra protein.</p>
+                <p><strong>Don’ts:</strong> Don’t skip your doctor visits, even if you feel fine. Don’t ignore signs like bone pain, tiredness, or infections—tell your doctor right away. Avoid smoking or drinking too much alcohol, as they can make things worse.</p>
+            </div>
+            <div class="about-box">
+                <h3>Premalignant Blood Conditions (Early Warning Stage)</h3>
+                <p><strong>What It Is:</strong> This is a stage where the condition is getting closer to becoming cancer but isn’t there yet, like smoldering multiple myeloma (SMM). You might have more abnormal cells, but you still don’t feel very sick.</p>
+                <p><strong>Medicines:</strong> If your SMM is high-risk (more likely to turn into cancer), doctors might give you lenalidomide (Revlimid) to slow it down. Sometimes they add a steroid called dexamethasone to help. If it’s low-risk, they’ll just watch you with blood tests and scans like MRI every few months.</p>
+                <p><strong>Do’s:</strong> Follow your doctor’s advice about tests and visits. Stay active with light exercise like walking to keep your bones and muscles strong. Get enough sleep to help your body stay healthy.</p>
+                <p><strong>Don’ts:</strong> Don’t take any new medicines or supplements without asking your doctor—they might affect your condition. Don’t ignore symptoms like new pain, weakness, or weight loss—report them quickly. Avoid stress; try to relax with activities like reading or listening to music.</p>
+            </div>
+            <div class="about-box">
+                <h3>Early Malignant Blood Cancers (Early Cancer Stage)</h3>
+                <p><strong>What It Is:</strong> This is when cancer has just started, like early chronic lymphocytic leukemia (CLL). You might not feel sick yet, but cancer cells are growing in your blood or bone marrow.</p>
+                <p><strong>Medicines:</strong> If you don’t have symptoms, doctors might just watch you (called “watch and wait”). If treatment is needed, they might use targeted medicines like ibrutinib (Imbruvica) or venetoclax (Venclexta) to stop cancer cells from growing. They might also give filgrastim (Neupogen) to help your body make more white blood cells and fight infections.</p>
+                <p><strong>Do’s:</strong> Wash your hands often to avoid infections, especially if your white blood cell count is low. Eat cooked foods and avoid raw foods like sushi to lower infection risk. Tell your doctor if you feel feverish, tired, or have bruising.</p>
+                <p><strong>Don’ts:</strong> Don’t be around sick people or crowded places where you might catch an infection. Don’t eat uncooked fruits or vegetables unless they’re washed well. Don’t skip your medicines or change the dose without talking to your doctor.</p>
+            </div>
+            <div class="about-box">
+                <h3>Progressive Malignant Blood Cancers (Advanced Cancer Stage)</h3>
+                <p><strong>What It Is:</strong> This is when the cancer is more serious and growing fast, like acute myeloid leukemia (AML), acute lymphoblastic leukemia (ALL), or active multiple myeloma. You might feel very sick and need treatment right away.</p>
+                <p><strong>Medicines:</strong> For AML, doctors often use chemotherapy medicines like cytarabine and daunorubicin to kill cancer cells, and sometimes a stem cell transplant to replace bad cells with healthy ones. For ALL, they might use vincristine and prednisone, plus a targeted medicine like imatinib (Gleevec) if you have a specific gene change. For multiple myeloma, they use medicines like bortezomib (Velcade), lenalidomide (Revlimid), and daratumumab (Darzalex) to fight the cancer. You might also get bisphosphonates for bone health, blood transfusions for low blood counts, and antibiotics to prevent infections.</p>
+                <p><strong>Do’s:</strong> Take your medicines exactly as your doctor says. Rest a lot because your body is working hard. Drink lots of water to help your kidneys flush out the medicine. Get vaccines like the flu shot if your doctor says it’s okay.</p>
+                <p><strong>Don’ts:</strong> Don’t miss your treatments or appointments—they’re very important. Don’t eat junk food; it can make you feel worse—stick to healthy meals. Don’t do heavy exercise or lift heavy things; you might get hurt or feel more tired. Avoid people with colds or infections to stay safe.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>© 2025 Blood Cancer Diagnosis. All rights reserved.</p>
+        <div class="footer-links">
+            <a href="mailto:support@bloodcancerdiagnosis.com">support@bloodcancerdiagnosis.com</a> | 
+            <a href="https://bloodcancerdiagnosis.com">Visit Website</a>
+        </div>
+    </footer>
+
+    <!-- Change Password Modal -->
+    <div id="changePasswordModal" class="modal">
+        <div class="modal-content">
+            <h3>Change Password</h3>
+            <span class="close-modal" onclick="closeModal('changePasswordModal')">×</span>
+            <div class="input-container">
+                <input type="password" id="currentPassword" placeholder="Current Password" required>
+                <i class="fas fa-eye password-toggle" id="toggleCurrentPassword" onclick="togglePassword('currentPassword')"></i>
+            </div>
+            <div class="input-container">
+                <input type="password" id="newPasswordChange" placeholder="New Password" required>
+                <i class="fas fa-eye password-toggle" id="toggleNewPasswordChange" onclick="togglePassword('newPasswordChange')"></i>
+            </div>
+            <div class="input-container">
+                <input type="password" id="confirmPasswordChange" placeholder="Confirm New Password" required>
+                <i class="fas fa-eye password-toggle" id="toggleConfirmPasswordChange" onclick="togglePassword('confirmPasswordChange')"></i>
+            </div>
+            <div id="changeErrorMessage" class="error">Passwords do not match or current password is incorrect!</div>
+            <button onclick="submitChangePassword()">Submit</button>
+            <button onclick="closeModal('changePasswordModal')">Cancel</button>
+        </div>
+    </div>
+
+    <!-- Forgot Password Modal -->
+    <div id="forgotPasswordModal" class="modal">
+        <div class="modal-content">
+            <h3>Forgot Password</h3>
+            <span class="close-modal" onclick="closeModal('forgotPasswordModal')">×</span>
+            <div class="input-container">
+                <input type="password" id="oldPassword" placeholder="Old Password" required>
+                <i class="fas fa-eye password-toggle" id="toggleOldPassword" onclick="togglePassword('oldPassword')"></i>
+            </div>
+            <div class="input-container">
+                <input type="password" id="newPassword" placeholder="New Password" required>
+                <i class="fas fa-eye password-toggle" id="toggleNewPassword" onclick="togglePassword('newPassword')"></i>
+            </div>
+            <div class="input-container">
+                <input type="password" id="confirmPassword" placeholder="Confirm New Password" required>
+                <i class="fas fa-eye password-toggle" id="toggleConfirmPassword" onclick="togglePassword('confirmPassword')"></i>
+            </div>
+            <div id="forgotErrorMessage" class="error">Passwords do not match or old password is incorrect!</div>
+            <button onclick="submitForgotPassword()">Submit</button>
+            <button onclick="closeModal('forgotPasswordModal')">Cancel</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM fully loaded - Initializing navbar functionality');
+
+            // Navbar elements
+            const profileBtn = document.getElementById('profile-btn');
+            const profileDropdown = document.querySelector('.profile-dropdown');
+            const dropdownContent = document.querySelector('.dropdown-content');
+            const profileDetailsBtn = document.getElementById('profile-details-btn');
+            const changePasswordBtn = document.getElementById('change-password-btn');
+            const forgotPasswordBtn = document.getElementById('forgot-password-btn');
+            const logoutBtn = document.getElementById('logout-btn');
+            const navLinks = document.querySelectorAll('.navbar .nav-links > a');
+            let isDropdownOpen = false;
+
+            // Verify elements exist
+            if (!profileBtn || !profileDropdown || !dropdownContent) {
+                console.error('One or more navbar elements are missing in the DOM');
+                return;
+            }
+            if (!profileDetailsBtn || !changePasswordBtn || !forgotPasswordBtn || !logoutBtn) {
+                console.error('One or more dropdown buttons are missing in the DOM');
+                return;
+            }
+
+            // Set About button as active by default
+            const aboutBtn = document.getElementById('about-btn');
+            if (aboutBtn) {
+                aboutBtn.classList.add('active');
+                console.log('About button set as active by default');
+            } else {
+                console.error('About button not found in DOM');
+            }
+
+            // Toggle profile dropdown on click
+            profileBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                isDropdownOpen = !isDropdownOpen;
+                profileDropdown.classList.toggle('active', isDropdownOpen);
+                dropdownContent.style.display = isDropdownOpen ? 'block' : 'none';
+                console.log(`Profile dropdown toggled: ${isDropdownOpen ? 'Open' : 'Closed'}`);
+            });
+
+            // Handle dropdown menu buttons
+            profileDetailsBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('Profile button clicked - Navigating to profile page');
+                const profileUrl = '{{ url_for("doctor_profile") }}';
+                if (profileUrl) {
+                    window.location.href = profileUrl;
+                } else {
+                    console.error('Profile URL is not defined');
+                    alert('Error: Profile route not found. Please check Flask routes.');
+                }
+                closeDropdown();
+            });
+
+            changePasswordBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('Change Password button clicked - Opening modal');
+                const modal = document.getElementById('changePasswordModal');
+                if (modal) {
+                    modal.style.display = 'flex';
+                    document.getElementById('changeErrorMessage').style.display = 'none';
+                    document.getElementById('currentPassword').value = '';
+                    document.getElementById('newPasswordChange').value = '';
+                    document.getElementById('confirmPasswordChange').value = '';
+                } else {
+                    console.error('Change Password modal not found in DOM');
+                }
+                closeDropdown();
+            });
+
+            forgotPasswordBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('Forgot Password button clicked - Opening modal');
+                const modal = document.getElementById('forgotPasswordModal');
+                if (modal) {
+                    modal.style.display = 'flex';
+                    document.getElementById('forgotErrorMessage').style.display = 'none';
+                    document.getElementById('oldPassword').value = '';
+                    document.getElementById('newPassword').value = '';
+                    document.getElementById('confirmPassword').value = '';
+                } else {
+                    console.error('Forgot Password modal not found in DOM');
+                }
+                closeDropdown();
+            });
+
+            logoutBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('Logout button clicked');
+                if (confirm('Are you sure you want to logout?')) {
+                    console.log('Logout confirmed - Redirecting to /logout');
+                    window.location.href = '{{ url_for("logout") }}';
+                }
+                closeDropdown();
+            });
+
+            function closeDropdown() {
+                isDropdownOpen = false;
+                profileDropdown.classList.remove('active');
+                dropdownContent.style.display = 'none';
+                console.log('Dropdown closed');
+            }
+
+            // Handle navigation for top-level nav links
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    const id = this.getAttribute('id');
+                    console.log(`Nav link clicked: ${id}`);
+
+                    navLinks.forEach(l => l.classList.remove('active'));
+                    this.classList.add('active');
+
+                    if (id === 'home-btn') {
+                        console.log('Navigating to Home');
+                        const homeUrl = '{{ url_for("doctor_dashboard") }}';
+                        if (homeUrl) {
+                            window.location.href = homeUrl;
+                        } else {
+                            console.error('Home URL is not defined');
+                            alert('Error: Home route not found. Please check Flask routes.');
+                        }
+                    } else if (id === 'about-btn') {
+                        console.log('Navigating to About (already on About page)');
+                    } else if (id === 'diagnosis-btn') {
+                        console.log('Navigating to Diagnosis');
+                        const diagnosisUrl = '{{ url_for("diagnosis") }}';
+                        if (diagnosisUrl) {
+                            window.location.href = diagnosisUrl;
+                        } else {
+                            console.error('Diagnosis URL is not defined');
+                            alert('Error: Diagnosis route not found. Please check Flask routes.');
+                        }
+                    } else if (id === 'patients-btn') {
+                        console.log('Navigating to Patients');
+                        const patientsUrl = '{{ url_for("patients") }}';
+                        if (patientsUrl) {
+                            window.location.href = patientsUrl;
+                        } else {
+                            console.error('Patients URL is not defined');
+                            alert('Error: Patients route not found. Please check Flask routes.');
+                        }
+                    } else if (id === 'medication-btn') {
+                        console.log('Navigating to Medication');
+                        const medicationUrl = '{{ url_for("medication") }}';
+                        if (medicationUrl) {
+                            window.location.href = medicationUrl;
+                        } else {
+                            console.error('Medication URL is not defined');
+                            alert('Error: Medication route not found. Please check Flask routes.');
+                        }
+                    }
+
+                    closeDropdown();
+                });
+            });
+
+            // Toggle password visibility
+            function togglePassword(fieldId) {
+                const input = document.getElementById(fieldId);
+                const toggleIcon = document.getElementById(`toggle${fieldId.charAt(0).toUpperCase() + fieldId.slice(1)}`);
+                if (!input || !toggleIcon) {
+                    console.error(`Toggle password failed: Element ${fieldId} or toggle icon not found`);
+                    return;
+                }
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    toggleIcon.classList.remove('fa-eye');
+                    toggleIcon.classList.add('fa-eye-slash');
+                } else {
+                    input.type = 'password';
+                    toggleIcon.classList.remove('fa-eye-slash');
+                    toggleIcon.classList.add('fa-eye');
+                }
+                console.log(`Password visibility toggled for field: ${fieldId}`);
+            }
+
+            // Close modal function
+            function closeModal(modalId) {
+                const modal = document.getElementById(modalId);
+                if (!modal) {
+                    console.error(`Close modal failed: Modal ${modalId} not found`);
+                    return;
+                }
+                modal.style.display = 'none';
+                if (modalId === 'changePasswordModal') {
+                    document.getElementById('changeErrorMessage').style.display = 'none';
+                    document.getElementById('currentPassword').value = '';
+                    document.getElementById('newPasswordChange').value = '';
+                    document.getElementById('confirmPasswordChange').value = '';
+                } else if (modalId === 'forgotPasswordModal') {
+                    document.getElementById('forgotErrorMessage').style.display = 'none';
+                    document.getElementById('oldPassword').value = '';
+                    document.getElementById('newPassword').value = '';
+                    document.getElementById('confirmPassword').value = '';
+                }
+                console.log(`Modal closed: ${modalId}`);
+            }
+
+            // Submit Change Password
+            function submitChangePassword() {
+                const currentPassword = document.getElementById('currentPassword').value;
+                const newPassword = document.getElementById('newPasswordChange').value;
+                const confirmPassword = document.getElementById('confirmPasswordChange').value;
+                const errorMessage = document.getElementById('changeErrorMessage');
+
+                if (!currentPassword || !newPassword || !confirmPassword) {
+                    errorMessage.textContent = 'Please fill in all fields!';
+                    errorMessage.style.display = 'block';
+                    console.log('Change Password failed: Missing fields');
+                    return;
+                }
+
+                if (newPassword !== confirmPassword) {
+                    errorMessage.textContent = 'New password and confirmation do not match!';
+                    errorMessage.style.display = 'block';
+                    console.log('Change Password failed: Passwords do not match');
+                    return;
+                }
+
+                console.log('Submitting change password request');
+                fetch('/doctor/change_password', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ current_password: currentPassword, new_password: newPassword, confirm_password: confirmPassword })
+                })
+                .then(response => {
+                    if (!response.ok) throw new Error('Network response was not ok');
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        console.log('Password changed successfully');
+                        alert('Password changed successfully!');
+                        closeModal('changePasswordModal');
+                    } else {
+                        console.error(`Change Password failed: ${data.message}`);
+                        errorMessage.textContent = data.message || 'Error changing password';
+                        errorMessage.style.display = 'block';
+                    }
+                })
+                .catch(error => {
+                    console.error(`Fetch error during change password: ${error}`);
+                    errorMessage.textContent = `Error: ${error.message}`;
+                    errorMessage.style.display = 'block';
+                });
+            }
+
+            // Submit Forgot Password
+            function submitForgotPassword() {
+                const oldPassword = document.getElementById('oldPassword').value;
+                const newPassword = document.getElementById('newPassword').value;
+                const confirmPassword = document.getElementById('confirmPassword').value;
+                const errorMessage = document.getElementById('forgotErrorMessage');
+
+                if (!oldPassword || !newPassword || !confirmPassword) {
+                    errorMessage.textContent = 'Please fill in all fields!';
+                    errorMessage.style.display = 'block';
+                    console.log('Forgot Password failed: Missing fields');
+                    return;
+                }
+
+                if (newPassword !== confirmPassword) {
+                    errorMessage.textContent = 'New password and confirmation do not match!';
+                    errorMessage.style.display = 'block';
+                    console.log('Forgot Password failed: Passwords do not match');
+                    return;
+                }
+
+                console.log('Submitting forgot password request');
+                fetch('/doctor/forgot_password', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ old_password: oldPassword, new_password: newPassword, confirm_password: confirmPassword })
+                })
+                .then(response => {
+                    if (!response.ok) throw new Error('Network response was not ok');
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        console.log('Password updated successfully');
+                        alert('Password updated successfully!');
+                        closeModal('forgotPasswordModal');
+                    } else {
+                        console.error(`Forgot Password failed: ${data.message}`);
+                        errorMessage.textContent = data.message || 'Error updating password';
+                        errorMessage.style.display = 'block';
+                    }
+                })
+                .catch(error => {
+                    console.error(`Fetch error during forgot password: ${error}`);
+                    errorMessage.textContent = `Error: ${error.message}`;
+                    errorMessage.style.display = 'block';
+                });
+            }
+
+            // Close modals when clicking outside
+            window.addEventListener('click', function(e) {
+                if (!e.target.closest('.profile-dropdown') && !profileDropdown.contains(e.target)) {
+                    closeDropdown();
+                }
+                if (e.target.className === 'modal') {
+                    closeModal('changePasswordModal');
+                    closeModal('forgotPasswordModal');
+                }
+            });
+
+            // Close modals with close button
+            document.querySelectorAll('.close-modal').forEach(button => {
+                button.addEventListener('click', function() {
+                    const modalId = this.getAttribute('onclick').match(/'([^']+)'/)[1];
+                    closeModal(modalId);
+                });
+            });
+
+            // Expose functions to global scope for HTML onclick events
+            window.togglePassword = togglePassword;
+            window.closeModal = closeModal;
+            window.submitChangePassword = submitChangePassword;
+            window.submitForgotPassword = submitForgotPassword;
+
+            console.log('Navbar JavaScript fully initialized');
+        });
+    </script>
+</body>
+</html>

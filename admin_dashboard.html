@@ -1,0 +1,1290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin Dashboard</title>
+  <link rel="icon" href="data:image/svg+xml,
+  <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'>
+    <text y='50%' x='50%' text-anchor='middle' dominant-baseline='central' font-size='48'>🩸</text>
+  </svg>">
+
+  <!-- Google Fonts (Roboto) -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <!-- Font Awesome Icons (including Brands for messenger) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <!-- Chart.js for Graphs -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+      margin: 0;
+      background-color: #f9fafb;
+      overflow-x: hidden;
+      color: #374151;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    h2 {
+      font-size: 1.875rem;
+      font-weight: 700;
+      color: #4b0082;
+      margin-top: 2rem;
+      margin-bottom: 1rem;
+    }
+
+    .navbar {
+      background-color: #4b0082;
+      padding: 0.85rem 1rem;
+      display: flex;
+      align-items: center;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 50;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      justify-content: space-between;
+      font-family: sans-serif;
+    }
+
+    .navbar .logo-section {
+      display: flex;
+      align-items: center;
+      color: #fff;
+      font-weight: 700;
+      font-size: 1.5rem;
+      margin-left: 1rem;
+    }
+
+    .navbar .logo-section i {
+      margin-right: 0.5rem;
+      transform: none;
+      font-size: 1.5rem;
+    }
+
+    .navbar .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+      flex-shrink: 0;
+      margin-right: 2rem;
+    }
+
+    .navbar .nav-links a {
+      color: #fff;
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 1rem;
+      padding: 0.5rem 0.9rem;
+      border-radius: 0.375rem;
+      transition: background-color 0.3s ease, transform 0.3s ease;
+      display: flex;
+      align-items: center;
+      white-space: nowrap;
+      flex-shrink: 0;
+      cursor: pointer;
+    }
+
+    .navbar .nav-links a i {
+      margin-right: 0.5rem;
+    }
+
+    .navbar .nav-links a:hover {
+      background-color: rgba(255, 255, 255, 0.2);
+      transform: scale(1.05);
+    }
+
+    .navbar .nav-links .logout-btn {
+      margin-left: 0;
+    }
+
+    .container {
+      margin-top: 4rem;
+      padding: 0.5rem;
+      width: 100%;
+      margin-left: 0;
+      margin-right: 0;
+      flex: 1 0 auto;
+    }
+
+    .section {
+      background-color: #fff;
+      padding: 1.5rem;
+      border-radius: 0.75rem;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+      margin-bottom: 1.5rem;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .overview-card {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .overview-item {
+      background-color: #f3f4f6;
+      padding: 1.5rem;
+      border-radius: 0.5rem;
+      text-align: center;
+      transition: transform 0.3s ease;
+    }
+
+    .overview-item:hover {
+      transform: translateY(-5px);
+      background-color: #e5e7eb;
+    }
+
+    .overview-item h3 {
+      font-size: 1.5rem;
+      color: #4b0082;
+      margin-bottom: 0.5rem;
+      font-weight: 700;
+    }
+
+    .overview-item p {
+      font-size: 1rem;
+      color: #6b7280;
+      font-weight: 500;
+    }
+
+    .system-health {
+      margin-bottom: 1.5rem;
+      padding: 1.5rem;
+      background-color: #e5e7eb;
+      border-radius: 0.75rem;
+      border-left: 4px solid #4b0082;
+    }
+
+    .system-health p {
+      margin: 0.5rem 0;
+      font-size: 1rem;
+    }
+
+    .recent-diagnoses {
+      margin-top: 1.5rem;
+    }
+
+    .recent-diagnoses h3 {
+      font-size: 1.25rem;
+      color: #4b0082;
+      margin-bottom: 1rem;
+    }
+
+    .recent-diagnoses ul {
+      list-style: disc;
+      padding-left: 2rem;
+      color: #374151;
+    }
+
+    .recent-diagnoses li {
+      margin-bottom: 0.5rem;
+      font-size: 1rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      overflow-x: auto;
+      display: block;
+      table-layout: fixed;
+      border: 1px solid #e5e7eb;
+    }
+
+    thead tr {
+      background-color: #e5e7eb;
+      color: #374151;
+    }
+
+    th, td {
+      padding: 1rem;
+      text-align: left;
+      font-size: 0.75rem;
+      border: 1px solid #e5e7eb;
+    }
+
+    tbody tr:hover {
+      background-color: #f9fafb;
+    }
+
+    th {
+      font-weight: 600;
+      background-color: #d1d5db;
+    }
+
+    #doctors-list-section td:last-child {
+      text-align: center;
+      vertical-align: top;
+    }
+
+    #doctors-list-section table th:nth-child(1),
+    #doctors-list-section table td:nth-child(1) { /* ID column */
+      width: 2%;
+      min-width: 5px;
+    }
+    #doctors-list-section table th:nth-child(2),
+    #doctors-list-section table td:nth-child(2) { /* Doctor ID column */
+      width: 4%;
+      min-width: 4px;
+    }
+    #doctors-list-section table th:nth-child(3),
+    #doctors-list-section table td:nth-child(3) { /* Doctor Name column */
+      width: 8%;
+      min-width: 40px;
+      text-align: center;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    #doctors-list-section table th:nth-child(4),
+    #doctors-list-section table td:nth-child(4) { /* Age column */
+      width: 2%;
+      min-width: 10px;
+    }
+    #doctors-list-section table th:nth-child(5),
+    #doctors-list-section table td:nth-child(5) { /* DOB column */
+      width: 5%;
+      min-width: 65px;
+    }
+    #doctors-list-section table th:nth-child(6),
+    #doctors-list-section table td:nth-child(6) { /* Mobile column */
+      width: 5%;
+      min-width: 10px;
+    }
+    #doctors-list-section table th:nth-child(7),
+    #doctors-list-section table td:nth-child(7) { /* Gmail column */
+      width: 12%;
+      min-width: 100px;
+      word-break: break-all;
+      line-height: 1.2;
+      height: 2.4em;
+    }
+    #doctors-list-section table th:nth-child(8),
+    #doctors-list-section table td:nth-child(8) { /* Aadhaar column */
+      width: 9%;
+      min-width: 70px;
+    }
+    #doctors-list-section table th:nth-child(9),
+    #doctors-list-section table td:nth-child(9) { /* Hospital Name column */
+      width: 5%;
+      min-width: 20px;
+    }
+    #doctors-list-section table th:nth-child(10),
+    #doctors-list-section table td:nth-child(10) { /* Hospital Address column */
+      width: 7%;
+      min-width: 40px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    #doctors-list-section table th:nth-child(11),
+    #doctors-list-section table td:nth-child(11) { /* Created At column */
+      width: 10%;
+      min-width: 100px;
+    }
+    #doctors-list-section table th:nth-child(12),
+    #doctors-list-section table td:nth-child(12) { /* Actions column */
+      width: 10%;
+      min-width: 100px;
+    }
+
+    .search-container {
+      margin-bottom: 1rem;
+      display: flex;
+      gap: 0.5rem;
+      max-width: 300px; /* Reduced width */
+      align-items: center; /* Ensure vertical alignment */
+    }
+
+    .search-container input {
+      width: 100%;
+      padding: 0.5rem;
+      border: 1px solid #d1d5db;
+      border-radius: 0.375rem;
+      transition: border-color 0.3s ease;
+      font-size: 0.875rem;
+    }
+
+    .search-container input:focus {
+      outline: none;
+      border-color: #4b0082;
+      box-shadow: 0 0 0 2px rgba(75, 0, 130, 0.2);
+    }
+
+    .search-container button {
+      padding: 0.5rem;
+      background-color: #4b0082;
+      color: #fff;
+      border: none;
+      border-radius: 0.375rem;
+      cursor: pointer;
+      font-size: 0.875rem;
+      transition: background-color 0.3s ease;
+      display: flex; /* Use flex to align icon and text */
+      align-items: center; /* Center icon vertically */
+      justify-content: center; /* Center icon horizontally */
+      width: 2rem; /* Fixed width to match input height */
+      height: 2rem; /* Fixed height to match input height */
+    }
+
+    .search-container button i {
+      margin: 0; /* Remove margin to keep icon centered */
+    }
+
+    .search-container button:hover {
+      background-color: #3a0062;
+    }
+
+    .form-group {
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex: 1;
+    }
+
+    .form-group label {
+      display: block;
+      font-weight: 500;
+      color: #4b0082;
+      margin-bottom: 0;
+      flex: 0 0 120px;
+      text-align: right;
+      white-space: nowrap;
+    }
+    .form-group label:after {
+      content: " *";
+      color: red;
+    }
+
+    .form-group input,
+    .form-group textarea {
+      width: 100%;
+      padding: 0.5rem;
+      border: 1px solid #d1d5db;
+      border-radius: 0.375rem;
+      transition: border-color 0.3s ease;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .password-group {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .password-container {
+      display: flex;
+      align-items: center;
+      gap: 3rem;
+    }
+
+    .password-input-container {
+      position: relative;
+      width: 200px;
+      flex-shrink: 0;
+    }
+
+    .password-input-container input[type="password"] {
+      width: 100%;
+      padding-right: 2rem;
+    }
+
+    .password-toggle {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #4b0082;
+      font-size: 0.875rem;
+      z-index: 1;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: #4b0082;
+      box-shadow: 0 0 0 2px rgba(75, 0, 130, 0.2);
+    }
+
+    #new-doctor-form {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      max-width: 100%;
+      position: relative;
+    }
+
+    #new-doctor-form .form-row {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      gap: 1.5rem;
+      align-items: flex-start;
+    }
+
+    .form-group.button-group {
+      justify-content: center;
+      gap: 1rem;
+    }
+
+    .action-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.25rem 0.75rem;
+      border-radius: 0.375rem;
+      text-decoration: none;
+      transition: background-color 0.3s ease, transform 0.3s ease;
+      cursor: pointer;
+      border: none;
+      font-size: 0.75rem;
+    }
+
+    .edit-btn {
+      background-color: #4b0082;
+      color: #fff;
+    }
+
+    .edit-btn:hover {
+      background-color: #3a0062;
+      transform: scale(1.05);
+    }
+
+    .toggle-btn {
+      background-color: #4b0082;
+      color: #fff;
+    }
+
+    .toggle-btn:hover {
+      background-color: #3a0062;
+      transform: scale(1.05);
+    }
+
+    .delete-btn {
+      background-color: #dc2626;
+      color: #fff;
+    }
+
+    .delete-btn:hover {
+      background-color: #b91c1c;
+      transform: scale(1.05);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      border-radius: 0.375rem;
+      text-decoration: none;
+      transition: background-color 0.3s ease, transform 0.3s ease;
+      cursor: pointer;
+      border: none;
+      font-size: 0.875rem;
+    }
+
+    .btn-primary {
+      background-color: #4b0082;
+      color: #fff;
+    }
+
+    .btn-primary:hover {
+      background-color: #3a0062;
+      transform: scale(1.05);
+    }
+
+    .btn-cancel {
+      background-color: #ef4444;
+      color: #fff;
+      margin-left: 1rem;
+    }
+
+    .btn-cancel:hover {
+      background-color: #dc2626;
+      transform: scale(1.05);
+    }
+
+    .edit-form {
+      display: none;
+      margin-top: 1rem;
+    }
+
+    .edit-form.show {
+      display: block;
+    }
+
+    .chart-container {
+      position: relative;
+      margin-top: 1rem;
+      height: 400px;
+    }
+
+    .footer {
+      flex-shrink: 0;
+      background-color: #4b0082;
+      color: #fff;
+      text-align: center;
+      padding: 1rem;
+      margin-top: auto;
+    }
+
+    /* Action Buttons Layout */
+    #doctors-list-section .action-buttons {
+      text-align: center;
+    }
+
+    #doctors-list-section .action-buttons .top-row {
+      display: inline-flex;
+      gap: 0.5rem;
+      justify-content: center;
+      margin-bottom: 0.25rem;
+    }
+
+    #doctors-list-section .action-buttons .bottom-row {
+      text-align: center;
+    }
+
+    /* Error message styling */
+    .error-message {
+      color: red;
+      font-size: 0.875rem;
+      margin-top: 0.25rem;
+      display: none;
+    }
+
+    /* Flash message styling */
+    .flash-message {
+      padding: 1rem;
+      margin-bottom: 1rem;
+      border-radius: 0.375rem;
+      font-size: 0.875rem;
+      text-align: center;
+    }
+
+    .flash-success {
+      background-color: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+
+    @media (max-width: 640px) {
+      .navbar {
+        padding: 0.5rem 1.5rem;
+      }
+
+      .navbar .logo-section {
+        font-size: 1.25rem;
+      }
+
+      .navbar .logo-section i {
+        font-size: 1.25rem;
+      }
+
+      .navbar .nav-links {
+        gap: 0.25rem;
+      }
+
+      .navbar .nav-links a {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.5rem;
+      }
+
+      .container {
+        padding: 0.5rem;
+      }
+
+      .section {
+        padding: 1rem;
+      }
+
+      table {
+        font-size: 0.7rem;
+      }
+
+      th, td {
+        padding: 0.1rem;
+      }
+
+      .overview-card {
+        grid-template-columns: 1fr;
+      }
+
+      .chart-container {
+        height: 300px;
+      }
+
+      .action-btn {
+        padding: 0.25rem 0.75rem;
+        font-size: 0.75rem;
+      }
+
+      .btn {
+        padding: 0.25rem 0.75rem;
+        font-size: 0.8rem;
+      }
+
+      .search-container {
+        max-width: 100%; /* Adjust for mobile */
+      }
+
+      .search-container input {
+        font-size: 0.8rem;
+      }
+
+      .search-container button {
+        font-size: 0.8rem;
+        padding: 0.4rem;
+        width: 2rem;
+        height: 2rem;
+      }
+
+      #doctors-list-section .action-buttons .top-row {
+        flex-direction: column;
+        gap: 0.25rem;
+      }
+
+      #new-doctor-form .form-row {
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .form-group {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+        width: 100%;
+      }
+
+      .form-group label {
+        flex: 0 0 100%;
+        text-align: left;
+      }
+
+      .form-group label:after {
+        content: " *";
+      }
+
+      .form-group input,
+      .form-group textarea {
+        width: 100%;
+        max-width: 100%;
+      }
+
+      .password-group {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+      }
+
+      .password-container {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.5rem;
+      }
+
+      .password-input-container {
+        width: 100%;
+      }
+
+      #generate-password-btn {
+        width: 100%;
+        margin-left: 0;
+      }
+
+      .form-group.button-group {
+        flex-direction: row;
+        justify-content: center;
+        gap: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="logo-section">
+      <i class="fas fa-ribbon"></i> Blood Cancer Diagnosis
+    </div>
+    <div class="nav-links">
+      <a href="#" id="home-btn" class="active"><i class="fas fa-home"></i> Home</a>
+      <a href="#" id="messages-btn"><i class="fab fa-facebook-messenger"></i> Messages <span id="message-count" class="bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center ml-1">{{ message_count }}</span></a>
+      <a href="#" id="new-doctor-btn"><i class="fas fa-user-plus"></i> New Doctor</a>
+      <a href="#" id="doctors-list-btn"><i class="fas fa-users"></i> Doctors List</a>
+      <a href="#" id="performance-btn"><i class="fas fa-chart-bar"></i> Performance</a>
+      <a href="{{ url_for('logout') }}" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+    </div>
+  </nav>
+
+  <!-- Main Container -->
+  <div class="container">
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="flash-message flash-{{ category }}">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <!-- Home Section (Enhanced Overview) -->
+    <div id="home-section" class="section">
+      <h2 class="text-lg font-bold mb-4 flex items-center">
+        <i class="fas fa-tachometer-alt mr-2"></i> Admin Dashboard Overview
+      </h2>
+
+      <!-- Enhanced System Overview -->
+      <div class="overview-card">
+        <div class="overview-item">
+          <h3>{{ doctors|length }}</h3>
+          <p>Total Doctors</p>
+        </div>
+        <div class="overview-item">
+          <h3>{{ doctors|length - doctors|selectattr('is_blocked')|list|length }}</h3>
+          <p>Active Doctors</p>
+        </div>
+        <div class="overview-item">
+          <h3 id="real-time-diagnoses">0</h3>
+          <p>Diagnosed Cases</p>
+        </div>
+        <div class="overview-item">
+          <h3>{{ messages_data|length }}</h3>
+          <p>Pending Messages</p>
+        </div>
+      </div>
+
+      <!-- Enhanced System Health -->
+      <div class="system-health">
+        <p><strong>System Status:</strong> <span class="text-green-600">Operational</span></p>
+        <p><strong>Last Sync:</strong> {{ current_date.strftime('%Y-%m-%d %H:%M:%S') if current_date else 'N/A' }}</p>
+        <p><strong>Next Update:</strong> In 30 minutes</p>
+      </div>
+
+      <!-- Enhanced Recent Diagnoses -->
+      <div class="recent-diagnoses">
+        <h3>Latest Diagnoses</h3>
+        <ul>
+          <li><strong>Patient ID 001:</strong> Leukemia - Diagnosed on 2025-04-06</li>
+          <li><strong>Patient ID 002:</strong> Lymphoma - Diagnosed on 2025-04-05</li>
+          <li><strong>Patient ID 003:</strong> Myeloma - Diagnosed on 2025-04-04</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Messages Section -->
+    <div id="messages-section" class="section hidden">
+      <h2 class="text-lg font-bold mb-4 flex items-center">
+        <i class="fab fa-facebook-messenger mr-2"></i> Received Messages
+      </h2>
+      {% if messages_data %}
+        <div class="overflow-x-auto">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Email</th>
+                <th>Message</th>
+                <th>Timestamp</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for msg in messages_data %}
+                <tr>
+                  <td>{{ msg.id }}</td>
+                  <td>{{ msg.email }}</td>
+                  <td>{{ msg.message }}</td>
+                  <td>{{ msg.timestamp.strftime('%Y-%m-%d %H:%M:%S') if msg.timestamp else 'N/A' }}</td>
+                  <td>
+                    <form method="POST" action="{{ url_for('delete_message', id=msg.id) }}" style="display:inline;">
+                      <button type="submit" class="action-btn delete-btn" onclick="return confirm('Are you sure you want to delete this message?');">
+                        <i class="fas fa-trash mr-1"></i> Delete
+                      </button>
+                    </form>
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <p class="text-gray-600">No messages received yet.</p>
+      {% endif %}
+    </div>
+
+    <!-- Create Doctor Form -->
+    <div id="new-doctor-section" class="section hidden">
+      <h2 class="text-lg font-bold mb-4 flex items-center">
+        <i class="fas fa-user-plus mr-2"></i> Create New Doctor Account
+      </h2>
+      <form method="POST" id="new-doctor-form" action="{{ url_for('admin_dashboard') }}" class="space-y-4">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Doctor ID</label>
+            <input type="text" name="doctor_id" required>
+            <div id="doctor-id-error" class="error-message">Doctor ID already exists</div>
+          </div>
+          <div class="form-group">
+            <label>Doctor Name</label>
+            <input type="text" name="doctor_name" required>
+          </div>
+          <div class="form-group">
+            <label>Age</label>
+            <input type="number" name="age" required>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>DOB</label>
+            <input type="date" name="dob" required>
+          </div>
+          <div class="form-group">
+            <label>Mobile</label>
+            <input type="tel" name="mobile_number" required>
+          </div>
+          <div class="form-group">
+            <label>Gmail</label>
+            <input type="email" name="gmail" required>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Aadhaar</label>
+            <input type="text" name="aadhaar_number" required>
+            <div id="aadhaar-error" class="error-message">Aadhaar number already exists</div>
+          </div>
+          <div class="form-group">
+            <label>Hospital Name</label>
+            <input type="text" name="hospital_name" required>
+          </div>
+          <div class="form-group">
+            <label>Hospital Address</label>
+            <textarea name="hospital_address" required rows="3"></textarea>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group password-group">
+            <label>Password</label>
+            <div class="password-container">
+              <div class="password-input-container">
+                <input type="password" name="password" id="generated-password" readonly>
+                <button type="button" class="password-toggle" id="toggle-password"><i class="fas fa-eye"></i></button>
+              </div>
+              <button type="button" id="generate-password-btn" class="btn btn-primary" style="margin-left: 1rem; padding: 0.25rem 0.75rem;">
+                <i class="fas fa-key"></i> Generate
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="form-group button-group">
+          <button type="submit" class="btn btn-primary"><i class="fas fa-plus"></i> Create Doctor</button>
+          <button type="button" id="cancel-doctor-btn" class="btn btn-cancel"><i class="fas fa-times"></i> Cancel</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Doctor Table -->
+    <div id="doctors-list-section" class="section hidden">
+      <h2 class="text-lg font-bold mb-4 flex items-center">
+        <i class="fas fa-users mr-2"></i> All Doctors
+      </h2>
+      <!-- Search Bar with Button -->
+      <div class="search-container">
+        <input type="text" id="doctor-search" placeholder="Search Doctor..." onkeyup="filterDoctors()">
+        <button type="button" onclick="filterDoctors()"><i class="fas fa-search"></i></button>
+      </div>
+      <div id="search-message" style="color: red; margin-top: 0.5rem; display: none;">Doctor is not valid</div>
+      <button type="button" id="refresh-btn" class="btn btn-primary mt-2" style="padding: 0.25rem 0.75rem;">
+        <i class="fas fa-sync"></i> Refresh
+      </button>
+      {% if doctors %}
+        <div class="overflow-x-auto">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Doctor ID</th>
+                <th>Doctor Name</th>
+                <th>Age</th>
+                <th>DOB</th>
+                <th>Mobile</th>
+                <th>Gmail</th>
+                <th>Aadhaar</th>
+                <th>Hospital Name</th>
+                <th>Hospital Address</th>
+                <th>Created At</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="doctors-table-body">
+              {% for doctor in doctors %}
+                <tr>
+                  <td>{{ doctor.id }}</td>
+                  <td>{{ doctor.doctor_id if doctor.doctor_id else 'N/A' }}</td>
+                  <td>{{ doctor.doctor_name if doctor.doctor_name else 'N/A' }}</td>
+                  <td>{{ doctor.age if doctor.age else 'N/A' }}</td>
+                  <td>{{ doctor.dob.strftime('%Y-%m-%d') if doctor.dob else 'N/A' }}</td>
+                  <td>{{ doctor.mobile_number if doctor.mobile_number else 'N/A' }}</td>
+                  <td>{{ doctor.gmail if doctor.gmail else 'N/A' }}</td>
+                  <td>{{ doctor.aadhaar_number if doctor.aadhaar_number else 'N/A' }}</td>
+                  <td>{{ doctor.hospital_name if doctor.hospital_name else 'N/A' }}</td>
+                  <td>{{ doctor.hospital_address if doctor.hospital_address else 'N/A' }}</td>
+                  <td>{{ doctor.created_at.strftime('%Y-%m-%d %H:%M:%S') if doctor.created_at else 'N/A' }}</td>
+                  <td>
+                    <div class="action-buttons">
+                      <div class="top-row">
+                        <a href="{{ url_for('edit_doctor', id=doctor.id) }}" class="action-btn edit-btn"><i class="fas fa-edit mr-1"></i> Edit</a>
+                        <form method="POST" action="{{ url_for('admin_dashboard') }}" style="display:inline;" data-doctor-id="{{ doctor.id }}" data-is-blocked="{{ doctor.is_blocked }}">
+                          <input type="hidden" name="toggle_id" value="{{ doctor.id }}">
+                          <button type="submit" class="action-btn toggle-btn" data-current-action="{{ 'unblock' if doctor.is_blocked else 'block' }}" onclick="return confirm(`Are you sure you want to ${this.getAttribute('data-current-action')} this doctor?`);">
+                            <i class="fas fa-{{ 'check' if doctor.is_blocked else 'ban' }} mr-1"></i> {{ 'Unhold' if doctor.is_blocked else 'Hold' }}
+                          </button>
+                        </form>
+                      </div>
+                      <div class="bottom-row">
+                        <form method="POST" action="{{ url_for('delete_doctor', id=doctor.id) }}" style="display:inline;">
+                          <input type="hidden" name="delete_id" value="{{ doctor.id }}">
+                          <button type="submit" class="action-btn delete-btn" onclick="return confirm('Are you sure you want to delete this doctor?');">
+                            <i class="fas fa-trash mr-1"></i> Delete
+                          </button>
+                        </form>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <p class="text-gray-600">No doctor accounts found.</p>
+      {% endif %}
+    </div>
+
+    <!-- Performance Section -->
+    <div id="performance-section" class="section hidden">
+      <h2 class="text-lg font-bold mb-4 flex items-center">
+        <i class="fas fa-chart-bar mr-2"></i> Doctor Performance
+      </h2>
+      <div class="chart-container">
+        <canvas id="performanceChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <p>© 2025 Blood Cancer Diagnosis. All rights reserved.</p>
+  </footer>
+
+  <script>
+    // Function to attach navbar event listeners
+    function attachNavbarListeners() {
+      document.getElementById('home-btn')?.addEventListener('click', function(e) {
+        e.preventDefault();
+        document.getElementById('home-section')?.classList.remove('hidden');
+        document.getElementById('messages-section')?.classList.add('hidden');
+        document.getElementById('new-doctor-section')?.classList.add('hidden');
+        document.getElementById('doctors-list-section')?.classList.add('hidden');
+        document.getElementById('performance-section')?.classList.add('hidden');
+        this.classList.add('active');
+        document.getElementById('messages-btn')?.classList.remove('active');
+        document.getElementById('new-doctor-btn')?.classList.remove('active');
+        document.getElementById('doctors-list-btn')?.classList.remove('active');
+        document.getElementById('performance-btn')?.classList.remove('active');
+        console.log("Switched to Home section");
+      });
+
+      document.getElementById('messages-btn')?.addEventListener('click', function(e) {
+        e.preventDefault();
+        document.getElementById('messages-section')?.classList.remove('hidden');
+        document.getElementById('home-section')?.classList.add('hidden');
+        document.getElementById('new-doctor-section')?.classList.add('hidden');
+        document.getElementById('doctors-list-section')?.classList.add('hidden');
+        document.getElementById('performance-section')?.classList.add('hidden');
+        this.classList.add('active');
+        document.getElementById('home-btn')?.classList.remove('active');
+        document.getElementById('new-doctor-btn')?.classList.remove('active');
+        document.getElementById('doctors-list-btn')?.classList.remove('active');
+        document.getElementById('performance-btn')?.classList.remove('active');
+        console.log("Switched to Messages section");
+      });
+
+      document.getElementById('new-doctor-btn')?.addEventListener('click', function(e) {
+        e.preventDefault();
+        document.getElementById('new-doctor-section')?.classList.remove('hidden');
+        document.getElementById('home-section')?.classList.add('hidden');
+        document.getElementById('messages-section')?.classList.add('hidden');
+        document.getElementById('doctors-list-section')?.classList.add('hidden');
+        document.getElementById('performance-section')?.classList.add('hidden');
+        this.classList.add('active');
+        document.getElementById('home-btn')?.classList.remove('active');
+        document.getElementById('messages-btn')?.classList.remove('active');
+        document.getElementById('doctors-list-btn')?.classList.remove('active');
+        document.getElementById('performance-btn')?.classList.remove('active');
+        console.log("Switched to New Doctor section");
+        generateRandomPassword(); // Generate password when opening the form
+      });
+
+      document.getElementById('doctors-list-btn')?.addEventListener('click', function(e) {
+        e.preventDefault();
+        document.getElementById('doctors-list-section')?.classList.remove('hidden');
+        document.getElementById('home-section')?.classList.add('hidden');
+        document.getElementById('messages-section')?.classList.add('hidden');
+        document.getElementById('new-doctor-section')?.classList.add('hidden');
+        document.getElementById('performance-section')?.classList.add('hidden');
+        this.classList.add('active');
+        document.getElementById('home-btn')?.classList.remove('active');
+        document.getElementById('messages-btn')?.classList.remove('active');
+        document.getElementById('new-doctor-btn')?.classList.remove('active');
+        document.getElementById('performance-btn')?.classList.remove('active');
+        console.log("Switched to Doctors List section");
+      });
+
+      document.getElementById('performance-btn')?.addEventListener('click', function(e) {
+        e.preventDefault();
+        document.getElementById('performance-section')?.classList.remove('hidden');
+        document.getElementById('home-section')?.classList.add('hidden');
+        document.getElementById('messages-section')?.classList.add('hidden');
+        document.getElementById('new-doctor-section')?.classList.add('hidden');
+        document.getElementById('doctors-list-section')?.classList.add('hidden');
+        this.classList.add('active');
+        document.getElementById('home-btn')?.classList.remove('active');
+        document.getElementById('messages-btn')?.classList.remove('active');
+        document.getElementById('new-doctor-btn')?.classList.remove('active');
+        document.getElementById('doctors-list-btn')?.classList.remove('active');
+        console.log("Switched to Performance section");
+      });
+    }
+
+    // Attach navbar listeners on page load
+    document.addEventListener('DOMContentLoaded', function() {
+      attachNavbarListeners();
+      const hash = window.location.hash;
+      if (hash === '#doctors-list-section') {
+        document.getElementById('doctors-list-btn')?.dispatchEvent(new Event('click'));
+      } else {
+        document.getElementById('home-btn')?.dispatchEvent(new Event('click'));
+      }
+    });
+
+    document.getElementById('cancel-doctor-btn')?.addEventListener('click', function() {
+      document.getElementById('new-doctor-section')?.classList.add('hidden');
+      document.getElementById('new-doctor-btn')?.classList.remove('active');
+      clearErrors();
+    });
+
+    document.getElementById('new-doctor-form')?.addEventListener('submit', function(event) {
+      event.preventDefault();
+      const doctorId = this.querySelector('input[name="doctor_id"]').value;
+      const aadhaarNumber = this.querySelector('input[name="aadhaar_number"]').value;
+      const password = this.querySelector('input[name="password"]').value;
+
+      Promise.all([
+        fetch(`/check_duplicate?field=doctor_id&value=${encodeURIComponent(doctorId)}`),
+        fetch(`/check_duplicate?field=aadhaar_number&value=${encodeURIComponent(aadhaarNumber)}`)
+      ])
+      .then(responses => Promise.all(responses.map(res => res.json())))
+      .then(data => {
+        let hasError = false;
+        if (data[0].exists) {
+          document.getElementById('doctor-id-error').style.display = 'block';
+          hasError = true;
+        } else {
+          document.getElementById('doctor-id-error').style.display = 'none';
+        }
+        if (data[1].exists) {
+          document.getElementById('aadhaar-error').style.display = 'block';
+          hasError = true;
+        } else {
+          document.getElementById('aadhaar-error').style.display = 'none';
+        }
+
+        if (!hasError && password) {
+          // Submit the form normally to allow Flask to handle the redirect and flash message
+          this.submit();
+        } else if (!password) {
+          alert('Please generate a password before submitting.');
+        }
+      })
+      .catch(error => {
+        alert('An error occurred while checking duplicates.');
+        console.error('Error:', error);
+      });
+    });
+
+    function clearErrors() {
+      document.getElementById('doctor-id-error').style.display = 'none';
+      document.getElementById('aadhaar-error').style.display = 'none';
+    }
+
+    document.querySelectorAll('form[data-doctor-id]').forEach(form => {
+      form.addEventListener('submit', function(event) {
+        event.preventDefault();
+        const formData = new FormData(this);
+        fetch(this.action, {
+          method: 'POST',
+          body: formData
+        })
+        .then(response => {
+          if (!response.ok) throw new Error('Network response was not ok');
+          // Reload the page to show flash message and update the table
+          window.location.href = window.location.pathname + '#doctors-list-section';
+          window.location.reload();
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          alert('An error occurred. Please try again.');
+        });
+      });
+    });
+
+    document.querySelectorAll('form[action*="/delete_doctor"]').forEach(form => {
+      form.addEventListener('submit', function(event) {
+        event.preventDefault();
+        if (confirm('Are you sure you want to delete this doctor?')) {
+          const formData = new FormData(this);
+          fetch(this.action, {
+            method: 'POST',
+            body: formData
+          })
+          .then(response => {
+            if (!response.ok) throw new Error('Network response was not ok');
+            // Reload the page to show flash message and update the table
+            window.location.href = window.location.pathname + '#doctors-list-section';
+            window.location.reload();
+          })
+          .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred. Please try again.');
+          });
+        }
+      });
+    });
+
+    const ctx = document.getElementById('performanceChart')?.getContext('2d');
+    if (ctx) {
+      const performanceData = {
+        labels: {{ performance_data|map(attribute='doctor_name')|list|default(['No Data'], true)|tojson|safe }},
+        datasets: [{
+          label: 'Number of Patients Diagnosed',
+          data: {{ performance_data|map(attribute='patient_count')|list|default([0], true)|tojson|safe }},
+          backgroundColor: 'rgba(75, 0, 130, 0.6)',
+          borderColor: 'rgba(75, 0, 130, 1)',
+          borderWidth: 1
+        }]
+      };
+
+      if (performanceData.labels.length > 0) {
+        new Chart(ctx, {
+          type: 'bar',
+          data: performanceData,
+          options: {
+            scales: {
+              y: {
+                beginAtZero: true,
+                title: {
+                  display: true,
+                  text: 'Number of Patients'
+                }
+              },
+              x: {
+                title: {
+                  display: true,
+                  text: 'Doctors'
+                }
+              }
+            }
+          }
+        });
+      } else {
+        document.querySelector('.chart-container').innerHTML = '<p class="text-gray-600">No performance data available.</p>';
+      }
+    }
+
+    function filterDoctors() {
+      const input = document.getElementById('doctor-search');
+      const filter = input.value.toLowerCase();
+      const table = document.getElementById('doctors-table-body');
+      const tr = table.getElementsByTagName('tr');
+      let found = false;
+
+      for (let i = 0; i < tr.length; i++) {
+        let tdId = tr[i].getElementsByTagName('td')[1];     // Doctor ID (column 2)
+        let tdName = tr[i].getElementsByTagName('td')[2];   // Doctor Name (column 3)
+        let tdMobile = tr[i].getElementsByTagName('td')[5]; // Mobile (column 6)
+        let tdGmail = tr[i].getElementsByTagName('td')[6];  // Gmail (column 7)
+        let tdAadhaar = tr[i].getElementsByTagName('td')[7]; // Aadhaar (column 8)
+
+        let textId = tdId ? (tdId.textContent || tdId.innerText).toLowerCase() : '';
+        let textName = tdName ? (tdName.textContent || tdName.innerText).toLowerCase() : '';
+        let textMobile = tdMobile ? (tdMobile.textContent || tdMobile.innerText).toLowerCase() : '';
+        let textGmail = tdGmail ? (tdGmail.textContent || tdGmail.innerText).toLowerCase() : '';
+        let textAadhaar = tdAadhaar ? (tdAadhaar.textContent || tdAadhaar.innerText).toLowerCase() : '';
+
+        if (
+          textId.indexOf(filter) > -1 ||
+          textName.indexOf(filter) > -1 ||
+          textMobile.indexOf(filter) > -1 ||
+          textGmail.indexOf(filter) > -1 ||
+          textAadhaar.indexOf(filter) > -1
+        ) {
+          tr[i].style.display = '';
+          found = true;
+        } else {
+          tr[i].style.display = 'none';
+        }
+      }
+
+      const searchMessage = document.getElementById('search-message');
+      if (!found && filter) {
+        searchMessage.style.display = 'block';
+      } else {
+        searchMessage.style.display = 'none';
+      }
+    }
+
+    function generateRandomPassword() {
+      const length = 8;
+      const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*";
+      let password = "";
+      for (let i = 0; i < length; i++) {
+        const randomIndex = Math.floor(Math.random() * charset.length);
+        password += charset[randomIndex];
+      }
+      document.getElementById('generated-password').value = password;
+    }
+
+    document.getElementById('generate-password-btn')?.addEventListener('click', function(e) {
+      e.preventDefault();
+      generateRandomPassword();
+    });
+
+    document.getElementById('toggle-password')?.addEventListener('click', function(e) {
+      e.preventDefault();
+      const passwordInput = document.getElementById('generated-password');
+      const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+      passwordInput.setAttribute('type', type);
+      this.querySelector('i').classList.toggle('fa-eye');
+      this.querySelector('i').classList.toggle('fa-eye-slash');
+    });
+
+    document.getElementById('refresh-btn')?.addEventListener('click', function() {
+      console.log("Refresh triggered");
+      location.reload();
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,1069 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor Dashboard</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><text y='50%' x='50%' text-anchor='middle' dominant-baseline='central' font-size='48'>🩸</text></svg>">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!-- Google Fonts (Roboto) -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', Arial, sans-serif;
+            margin: 0;
+            background-color: #f9fafb;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: hidden;
+        }
+
+        /* Navbar Styles */
+        .navbar {
+            width: 100%;
+            background: #4b0082;
+            padding: 15px 30px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            color: #fff;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            transition: background 0.3s ease;
+        }
+        .navbar:hover {
+            background: #3a006b;
+        }
+        .navbar .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .navbar .logo-section i {
+            font-size: 2em;
+            color: #e6e6fa;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        .navbar h2 {
+            margin: 0;
+            font-size: 1.8em;
+            color: #e6e6fa;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+        .navbar .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-left: 485px;
+        }
+        .navbar .nav-links > a {
+            color: #e6e6fa !important;
+            text-decoration: none !important;
+            font-size: 1.1em;
+            padding: 8px 15px;
+            border-radius: 5px;
+            transition: background 0.3s ease, color 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+            border-bottom: none !important;
+        }
+        .navbar .nav-links > a:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff !important;
+            border-bottom: none !important;
+        }
+        .navbar .nav-links > a.active {
+            background: #3a006b;
+            color: #fff !important;
+        }
+        .profile-dropdown {
+            position: relative;
+        }
+        .profile-dropdown > a {
+            color: #e6e6fa !important;
+            text-decoration: none !important;
+            padding: 8px 15px;
+            border-radius: 5px;
+            transition: background 0.3s ease, color 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+            border-bottom: none !important;
+        }
+        .profile-dropdown > a:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff !important;
+        }
+        .profile-dropdown .dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            background: #4b0082;
+            border-radius: 5px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            min-width: 200px;
+            z-index: 1001;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: opacity 0.2s ease, transform 0.2s ease;
+        }
+        .profile-dropdown:hover .dropdown-content,
+        .profile-dropdown.active .dropdown-content {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .profile-dropdown .dropdown-content a {
+            color: #e6e6fa !important;
+            padding: 12px 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1em;
+            text-decoration: none !important;
+            border-bottom: none !important;
+            transition: background 0.3s ease;
+        }
+        .profile-dropdown .dropdown-content a:hover {
+            background: #3a006b;
+        }
+
+        /* Dashboard Container */
+        .dashboard-container {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(5px);
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 6px 25px rgba(75, 0, 130, 0.2);
+            margin-top: 120px;
+            margin-bottom: 20px;
+            max-width: 750px;
+            width: 90%;
+            text-align: center;
+            animation: fadeIn 0.6s ease-in-out;
+            border: 1px solid rgba(75, 0, 130, 0.1);
+        }
+        h1 {
+            color: #4b0082;
+            font-size: 2.3em;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+        p.welcome {
+            color: #800080;
+            font-size: 1.2em;
+            margin-bottom: 25px;
+            font-weight: 500;
+        }
+        .content-text {
+            color: #333;
+            font-size: 1.1em;
+            line-height: 1.7;
+            margin-bottom: 30px;
+            padding: 0 20px;
+            text-align: left;
+            transition: opacity 0.5s ease;
+        }
+        .content-text strong {
+            color: #4b0082;
+        }
+        .content-text a {
+            color: #4b0082;
+            text-decoration: underline;
+        }
+
+        /* Footer Styles */
+        .footer {
+            margin-top: auto;
+            background: #4b0082;
+            color: #e6e6fa;
+            padding: 15px 30px;
+            text-align: center;
+            width: 100%;
+            font-size: 0.95em;
+            font-weight: 500;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+        }
+        .footer .footer-links {
+            margin-top: 5px;
+        }
+        .footer a {
+            color: #e6e6fa;
+            text-decoration: underline;
+            margin: 0 10px;
+            transition: color 0.3s ease;
+        }
+        .footer a:hover {
+            color: #fff;
+        }
+        .footer .social-icons a {
+            margin: 0 8px;
+            font-size: 1.2em;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1002;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background: #fff;
+            padding: 25px;
+            padding-right: 40px;
+            border-radius: 10px;
+            width: 100%;
+            max-width: 400px;
+            text-align: left;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+        .modal-content h3 {
+            color: #4b0082;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+        .modal-content .input-container {
+            position: relative;
+            margin-bottom: 15px;
+        }
+        .modal-content input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1em;
+        }
+        .modal-content .password-toggle {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #4b0082;
+        }
+        .modal-content button {
+            padding: 10px 20px;
+            background: #4b0082;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background 0.3s ease;
+            margin-right: 10px;
+            margin-top: 15px;
+        }
+        .modal-content button:hover {
+            background: #3a006b;
+        }
+        .modal-content .error {
+            color: red;
+            font-size: 0.9em;
+            margin-top: 5px;
+            display: none;
+        }
+        .close-modal {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 1.5em;
+            cursor: pointer;
+            color: #4b0082;
+        }
+
+        /* Animation */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 600px) {
+            .navbar {
+                padding: 10px 15px;
+            }
+            .navbar .logo-section i {
+                font-size: 1.6em;
+            }
+            .navbar h2 {
+                font-size: 1.4em;
+            }
+            .navbar .nav-links {
+                gap: 8px;
+            }
+            .navbar .nav-links > a {
+                font-size: 0.95em;
+                padding: 6px 10px;
+            }
+            .profile-dropdown > a {
+                font-size: 0.95em;
+                padding: 6px 10px;
+            }
+            .profile-dropdown .dropdown-content {
+                right: -5px;
+                min-width: 140px;
+            }
+            .profile-dropdown .dropdown-content a {
+                padding: 10px 12px;
+                font-size: 0.9em;
+            }
+            .dashboard-container {
+                margin-top: 90px;
+                padding: 25px;
+                width: 95%;
+            }
+            h1 {
+                font-size: 1.8em;
+            }
+            p.welcome {
+                font-size: 1.1em;
+            }
+            .content-text {
+                font-size: 1em;
+                padding: 0 10px;
+            }
+            .footer {
+                padding: 10px 15px;
+                font-size: 0.85em;
+            }
+            .footer .social-icons a {
+                margin: 0 5px;
+            }
+            .modal-content {
+                padding: 15px;
+            }
+            .modal-content h3 {
+                font-size: 1.2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <div class="navbar">
+        <div class="logo-section">
+            <i class="fas fa-ribbon"></i>
+            <h2>Doctor Dashboard</h2>
+        </div>
+        <div class="nav-links">
+            <a href="{{ url_for('doctor_dashboard') }}" id="home-btn" class="active"><i class="fas fa-home"></i> Home</a>
+            <a href="{{ url_for('doctor_about') }}" id="about-btn"><i class="fas fa-info-circle"></i> About</a>
+            <a href="{{ url_for('diagnosis') }}" id="diagnosis-btn"><i class="fas fa-stethoscope"></i> Diagnosis</a>
+            <a href="{{ url_for('patients') }}" id="patients-btn"><i class="fas fa-users"></i> Patients</a>
+            <a href="{{ url_for('medication') }}" id="medication-btn"><i class="fas fa-prescription-bottle-alt"></i> Medication</a>
+            <div class="profile-dropdown">
+                <a href="#" id="profile-btn"><i class="fas fa-user-circle" style="font-size: 1.5em;"></i></a>
+                <div class="dropdown-content">
+                    <a href="{{ url_for('doctor_profile') }}" id="profile-details-btn"><i class="fas fa-user"></i> Profile</a>
+                    <a href="#" id="change-password-btn"><i class="fas fa-lock"></i> Change Password</a>
+                    <a href="#" id="forgot-password-btn"><i class="fas fa-key"></i> Forgot Password</a>
+                    <a href="{{ url_for('logout') }}" id="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard Content -->
+    <div class="dashboard-container">
+        <h1>Welcome, Dr. {{ doctor_username }}!</h1>
+        <p class="welcome">Last Updated: <span id="last-updated">{{ timestamp }}</span></p>
+        <div class="content-text" id="home-content">
+            <p><strong>Real-Time Update:</strong> As of <span id="update-time"></span>, you are managing <span id="active-cases">150</span> active blood cancer cases. Recent alert: <span id="news-update">New diagnostic guideline released</span>.</p>
+            <p><strong>Professional Guidelines:</strong> Current priority: Review <span id="pending-reviews">5</span> pending cases. Adhere to WHO protocols for real-time diagnostics.</p>
+            <p><strong>Emergency Support:</strong> Contact <a href="tel:+1234567890">+1-234-567-890</a> or <a href="mailto:emergency@bloodcancerdiagnosis.com">emergency@bloodcancerdiagnosis.com</a> for urgent assistance.</p>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>© 2025 Blood Cancer Diagnosis. All rights reserved.</p>
+        <div class="footer-links">
+            <a href="mailto:support@bloodcancerdiagnosis.com">support@bloodcancerdiagnosis.com</a> | 
+            <a href="https://bloodcancerdiagnosis.com">Visit Website</a>
+        </div>
+    </footer>
+
+    <!-- Change Password Modal -->
+    <div id="changePasswordModal" class="modal">
+        <div class="modal-content">
+            <h3>Change Password</h3>
+            <span class="close-modal" onclick="closeModal('changePasswordModal')">×</span>
+            <div class="input-container">
+                <input type="password" id="currentPassword" placeholder="Current Password" required>
+                <i class="fas fa-eye password-toggle" id="toggleCurrentPassword" onclick="togglePassword('currentPassword')"></i>
+            </div>
+            <div class="input-container">
+                <input type="password" id="newPasswordChange" placeholder="New Password" required>
+                <i class="fas fa-eye password-toggle" id="toggleNewPasswordChange" onclick="togglePassword('newPasswordChange')"></i>
+            </div>
+            <div class="input-container">
+                <input type="password" id="confirmPasswordChange" placeholder="Confirm New Password" required>
+                <i class="fas fa-eye password-toggle" id="toggleConfirmPasswordChange" onclick="togglePassword('confirmPasswordChange')"></i>
+            </div>
+            <div id="changeErrorMessage" class="error">Passwords do not match or current password is incorrect!</div>
+            <button onclick="submitChangePassword()">Submit</button>
+            <button onclick="closeModal('changePasswordModal')">Cancel</button>
+        </div>
+    </div>
+
+    <!-- Forgot Password Modal -->
+    <div id="forgotPasswordModal" class="modal">
+        <div class="modal-content">
+            <h3>Forgot Password</h3>
+            <span class="close-modal" onclick="closeModal('forgotPasswordModal')">×</span>
+            <div class="input-container">
+                <input type="email" id="forgotEmail" placeholder="Enter your Gmail ID" required>
+            </div>
+            <div style="margin-top: 15px;"></div>
+            <button id="sendOtpBtn" onclick="sendOtp()">Send OTP</button>
+            <div id="otpSection" style="display: none;">
+                <div class="input-container">
+                    <input type="text" id="otpInput" placeholder="Enter OTP" required>
+                </div>
+                <button id="verifyOtpBtn" onclick="verifyOtp()">Verify OTP</button>
+                <button id="resendOtpBtn" onclick="resendOtp()" style="display: none;">Resend OTP</button>
+                <div id="otpErrorMessage" class="error">Invalid OTP or email not found!</div>
+                <div style="margin-top: 15px;"></div>
+                <div class="input-container">
+                    <input type="password" id="newPasswordForgot" placeholder="New Password" required style="display: none;">
+                    <i class="fas fa-eye password-toggle" id="toggleNewPasswordForgot" onclick="togglePassword('newPasswordForgot')" style="display: none;"></i>
+                </div>
+                <div class="input-container">
+                    <input type="password" id="confirmPasswordForgot" placeholder="Confirm New Password" required style="display: none;">
+                    <i class="fas fa-eye password-toggle" id="toggleConfirmPasswordForgot" onclick="togglePassword('confirmPasswordForgot')" style="display: none;"></i>
+                </div>
+                <div id="passwordErrorMessage" class="error" style="display: none;">Passwords do not match!</div>
+                <div style="margin-top: 15px;"></div>
+                <button id="submitNewPasswordBtn" onclick="submitNewPassword()" style="display: none;">Update Password</button>
+            </div>
+            <div id="forgotErrorMessage" class="error">An error occurred!</div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM fully loaded - Initializing navbar functionality');
+
+            // Navbar elements
+            const homeBtn = document.getElementById('home-btn');
+            const aboutBtn = document.getElementById('about-btn');
+            const diagnosisBtn = document.getElementById('diagnosis-btn');
+            const patientsBtn = document.getElementById('patients-btn');
+            const medicationBtn = document.getElementById('medication-btn');
+            const profileBtn = document.getElementById('profile-btn');
+            const profileDropdown = document.querySelector('.profile-dropdown');
+            const dropdownContent = document.querySelector('.dropdown-content');
+            const profileDetailsBtn = document.getElementById('profile-details-btn');
+            const changePasswordBtn = document.getElementById('change-password-btn');
+            const forgotPasswordBtn = document.getElementById('forgot-password-btn');
+            const logoutBtn = document.getElementById('logout-btn');
+            const navLinks = document.querySelectorAll('.navbar .nav-links > a');
+            let isDropdownOpen = false;
+
+            // Verify elements exist
+            if (!homeBtn || !aboutBtn || !diagnosisBtn || !patientsBtn || !medicationBtn || !profileBtn || !profileDropdown || !dropdownContent) {
+                console.error('One or more navbar elements are missing in the DOM');
+                return;
+            }
+            if (!profileDetailsBtn || !changePasswordBtn || !forgotPasswordBtn || !logoutBtn) {
+                console.error('One or more dropdown buttons are missing in the DOM');
+                return;
+            }
+
+            // First login check (assumed to be passed from Flask)
+            const firstLogin = {{ first_login|tojson|safe }};
+            console.log('First login status:', firstLogin);
+
+            // If first login, force password change and disable navigation
+            if (firstLogin) {
+                console.log('First login detected - Forcing password change');
+                const changePasswordModal = document.getElementById('changePasswordModal');
+                if (changePasswordModal) {
+                    changePasswordModal.style.display = 'flex';
+                    document.getElementById('changeErrorMessage').style.display = 'none';
+                    // Disable navigation links
+                    navLinks.forEach(link => {
+                        if (link.id !== 'profile-btn') {
+                            link.classList.add('disabled');
+                        }
+                    });
+                    // Disable dropdown options except logout
+                    profileDetailsBtn.classList.add('disabled');
+                    changePasswordBtn.classList.add('disabled'); // Disable change password during first login
+                    forgotPasswordBtn.classList.add('disabled');
+                } else {
+                    console.error('Change Password modal not found in DOM');
+                }
+            }
+
+            // Set Home button as active by default
+            homeBtn.classList.add('active');
+            console.log('Home button set as active by default');
+
+            // Toggle profile dropdown on click
+            profileBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                if (firstLogin) {
+                    console.log('Profile dropdown click ignored - First login requires password change');
+                    return;
+                }
+                isDropdownOpen = !isDropdownOpen;
+                profileDropdown.classList.toggle('active', isDropdownOpen);
+                dropdownContent.style.display = isDropdownOpen ? 'block' : 'none';
+                console.log(`Profile dropdown toggled: ${isDropdownOpen ? 'Open' : 'Closed'}`);
+            });
+
+            // Handle dropdown menu buttons
+            profileDetailsBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                if (firstLogin) {
+                    console.log('Profile details click ignored - First login requires password change');
+                    return;
+                }
+                console.log('Profile button clicked - Navigating to profile page');
+                const profileUrl = '{{ url_for("doctor_profile") }}';
+                if (profileUrl) {
+                    window.location.href = profileUrl;
+                } else {
+                    console.error('Profile URL is not defined');
+                    alert('Error: Profile route not found. Please check Flask routes.');
+                }
+                closeDropdown();
+            });
+
+            changePasswordBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                if (firstLogin) {
+                    console.log('Change Password click ignored - First login requires password change');
+                    return;
+                }
+                console.log('Change Password button clicked - Opening modal');
+                const modal = document.getElementById('changePasswordModal');
+                if (modal) {
+                    modal.style.display = 'flex';
+                    document.getElementById('changeErrorMessage').style.display = 'none';
+                    document.getElementById('currentPassword').value = '';
+                    document.getElementById('newPasswordChange').value = '';
+                    document.getElementById('confirmPasswordChange').value = '';
+                } else {
+                    console.error('Change Password modal not found in DOM');
+                }
+                closeDropdown();
+            });
+
+            forgotPasswordBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                if (firstLogin) {
+                    console.log('Forgot Password click ignored - First login requires password change');
+                    return;
+                }
+                console.log('Forgot Password button clicked - Opening modal');
+                const modal = document.getElementById('forgotPasswordModal');
+                if (modal) {
+                    modal.style.display = 'flex';
+                    document.getElementById('forgotErrorMessage').style.display = 'none';
+                    document.getElementById('otpSection').style.display = 'none';
+                    document.getElementById('sendOtpBtn').style.display = 'block';
+                    document.getElementById('forgotEmail').value = '';
+                    document.getElementById('otpInput').value = '';
+                    document.getElementById('newPasswordForgot').value = '';
+                    document.getElementById('confirmPasswordForgot').value = '';
+                    document.getElementById('otpErrorMessage').style.display = 'none';
+                    document.getElementById('passwordErrorMessage').style.display = 'none';
+                    document.getElementById('submitNewPasswordBtn').style.display = 'none';
+                    document.getElementById('resendOtpBtn').style.display = 'none';
+                    document.getElementById('toggleNewPasswordForgot').style.display = 'none';
+                    document.getElementById('toggleConfirmPasswordForgot').style.display = 'none';
+                    document.getElementById('newPasswordForgot').style.display = 'none';
+                    document.getElementById('confirmPasswordForgot').style.display = 'none';
+                } else {
+                    console.error('Forgot Password modal not found in DOM');
+                }
+                closeDropdown();
+            });
+
+            logoutBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('Logout button clicked');
+                if (confirm('Are you sure you want to logout?')) {
+                    console.log('Logout confirmed - Redirecting to /logout');
+                    window.location.href = '{{ url_for("logout") }}';
+                }
+                closeDropdown();
+            });
+
+            function closeDropdown() {
+                isDropdownOpen = false;
+                profileDropdown.classList.remove('active');
+                dropdownContent.style.display = 'none';
+                console.log('Dropdown closed');
+            }
+
+            // Handle navigation for top-level nav links
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    const id = this.getAttribute('id');
+                    console.log(`Nav link clicked: ${id}`);
+
+                    if (id === 'profile-btn') return; // Handled separately
+
+                    if (firstLogin) {
+                        e.preventDefault();
+                        console.log(`Navigation to ${id} blocked - First login requires password change`);
+                        return;
+                    }
+
+                    // Remove active class from all links and add to the clicked one
+                    navLinks.forEach(l => l.classList.remove('active'));
+                    this.classList.add('active');
+
+                    if (id === 'home-btn') {
+                        console.log('Navigating to Home (already on Doctor Dashboard)');
+                    } else if (id === 'about-btn') {
+                        console.log('Navigating to About');
+                        const aboutUrl = '{{ url_for("doctor_about") }}';
+                        if (aboutUrl) {
+                            window.location.href = aboutUrl;
+                        } else {
+                            console.error('About URL is not defined');
+                            alert('Error: About route not found. Please check Flask routes.');
+                        }
+                    } else if (id === 'diagnosis-btn') {
+                        console.log('Navigating to Diagnosis');
+                        const diagnosisUrl = '{{ url_for("diagnosis") }}';
+                        if (diagnosisUrl) {
+                            window.location.href = diagnosisUrl;
+                        } else {
+                            console.error('Diagnosis URL is not defined');
+                            alert('Error: Diagnosis route not found. Please check Flask routes.');
+                        }
+                    } else if (id === 'patients-btn') {
+                        console.log('Navigating to Patients');
+                        const patientsUrl = '{{ url_for("patients") }}';
+                        if (patientsUrl) {
+                            window.location.href = patientsUrl;
+                        } else {
+                            console.error('Patients URL is not defined');
+                            alert('Error: Patients route not found. Please check Flask routes.');
+                        }
+                    } else if (id === 'medication-btn') {
+                        console.log('Navigating to Medication');
+                        const medicationUrl = '{{ url_for("medication") }}';
+                        if (medicationUrl) {
+                            window.location.href = medicationUrl;
+                        } else {
+                            console.error('Medication URL is not defined');
+                            alert('Error: Medication route not found. Please check Flask routes.');
+                        }
+                    }
+
+                    closeDropdown();
+                });
+            });
+
+            // Real-time update simulation
+            function updateContent() {
+                if (firstLogin) {
+                    console.log('Real-time update skipped - First login requires password change');
+                    return;
+                }
+                const updateTime = document.getElementById('update-time');
+                const activeCases = document.getElementById('active-cases');
+                const pendingReviews = document.getElementById('pending-reviews');
+                const newsUpdate = document.getElementById('news-update');
+                const lastUpdated = document.getElementById('last-updated');
+                const now = new Date().toLocaleTimeString();
+                updateTime.textContent = now;
+                activeCases.textContent = Math.floor(Math.random() * 200);
+                pendingReviews.textContent = Math.floor(Math.random() * 10);
+                const newsOptions = ['New diagnostic guideline released', 'Research update on leukemia', 'Training session scheduled'];
+                newsUpdate.textContent = newsOptions[Math.floor(Math.random() * newsOptions.length)];
+                lastUpdated.textContent = new Date().toLocaleString();
+                console.log('Real-time content updated');
+            }
+            updateContent();
+            setInterval(updateContent, 5000);
+
+            // Toggle password visibility
+            function togglePassword(fieldId) {
+                const input = document.getElementById(fieldId);
+                const toggleIcon = document.getElementById(`toggle${fieldId.charAt(0).toUpperCase() + fieldId.slice(1)}`);
+                if (!input || !toggleIcon) {
+                    console.error(`Toggle password failed: Element ${fieldId} or toggle icon not found`);
+                    return;
+                }
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    toggleIcon.classList.remove('fa-eye');
+                    toggleIcon.classList.add('fa-eye-slash');
+                } else {
+                    input.type = 'password';
+                    toggleIcon.classList.remove('fa-eye-slash');
+                    toggleIcon.classList.add('fa-eye');
+                }
+                console.log(`Password visibility toggled for field: ${fieldId}`);
+            }
+
+            // Close modal function
+            function closeModal(modalId) {
+                const modal = document.getElementById(modalId);
+                if (!modal) {
+                    console.error(`Close modal failed: Modal ${modalId} not found`);
+                    return;
+                }
+                modal.style.display = 'none';
+                if (modalId === 'changePasswordModal') {
+                    if (firstLogin) {
+                        console.log('Close modal blocked - First login requires password change');
+                        alert('You must change your password before proceeding.');
+                        modal.style.display = 'flex';
+                        return;
+                    }
+                    document.getElementById('changeErrorMessage').style.display = 'none';
+                    document.getElementById('currentPassword').value = '';
+                    document.getElementById('newPasswordChange').value = '';
+                    document.getElementById('confirmPasswordChange').value = '';
+                } else if (modalId === 'forgotPasswordModal') {
+                    document.getElementById('forgotErrorMessage').style.display = 'none';
+                    document.getElementById('otpSection').style.display = 'none';
+                    document.getElementById('sendOtpBtn').style.display = 'block';
+                    document.getElementById('forgotEmail').value = '';
+                    document.getElementById('otpInput').value = '';
+                    document.getElementById('newPasswordForgot').value = '';
+                    document.getElementById('confirmPasswordForgot').value = '';
+                    document.getElementById('otpErrorMessage').style.display = 'none';
+                    document.getElementById('passwordErrorMessage').style.display = 'none';
+                    document.getElementById('submitNewPasswordBtn').style.display = 'none';
+                    document.getElementById('resendOtpBtn').style.display = 'none';
+                    document.getElementById('toggleNewPasswordForgot').style.display = 'none';
+                    document.getElementById('toggleConfirmPasswordForgot').style.display = 'none';
+                    document.getElementById('newPasswordForgot').style.display = 'none';
+                    document.getElementById('confirmPasswordForgot').style.display = 'none';
+                }
+                console.log(`Modal closed: ${modalId}`);
+            }
+
+            // Submit Change Password
+            function submitChangePassword() {
+                const currentPassword = document.getElementById('currentPassword').value;
+                const newPassword = document.getElementById('newPasswordChange').value;
+                const confirmPassword = document.getElementById('confirmPasswordChange').value;
+                const errorMessage = document.getElementById('changeErrorMessage');
+
+                if (!currentPassword || !newPassword || !confirmPassword) {
+                    errorMessage.textContent = 'Please fill in all fields!';
+                    errorMessage.style.display = 'block';
+                    console.log('Change Password failed: Missing fields');
+                    return;
+                }
+
+                if (newPassword !== confirmPassword) {
+                    errorMessage.textContent = 'New password and confirmation do not match!';
+                    errorMessage.style.display = 'block';
+                    console.log('Change Password failed: Passwords do not match');
+                    return;
+                }
+
+                console.log('Submitting change password request');
+                fetch('/doctor/change_password', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ current_password: currentPassword, new_password: newPassword, confirm_password: confirmPassword, first_login: firstLogin })
+                })
+                .then(response => {
+                    if (!response.ok) throw new Error('Network response was not ok');
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        console.log('Password changed successfully');
+                        alert('Password changed successfully!');
+                        closeModal('changePasswordModal');
+                        if (firstLogin) {
+                            // Re-enable navigation after successful password change
+                            navLinks.forEach(link => {
+                                link.classList.remove('disabled');
+                            });
+                            profileDetailsBtn.classList.remove('disabled');
+                            changePasswordBtn.classList.remove('disabled');
+                            forgotPasswordBtn.classList.remove('disabled');
+                            // Reload the page to update first_login status
+                            window.location.reload();
+                        }
+                    } else {
+                        console.error(`Change Password failed: ${data.message}`);
+                        errorMessage.textContent = data.message || 'Error changing password';
+                        errorMessage.style.display = 'block';
+                    }
+                })
+                .catch(error => {
+                    console.error(`Fetch error during change password: ${error}`);
+                    errorMessage.textContent = `Error: ${error.message}`;
+                    errorMessage.style.display = 'block';
+                });
+            }
+
+            // Send OTP
+            let otpSent = false;
+            function sendOtp() {
+                const email = document.getElementById('forgotEmail').value;
+                const errorMessage = document.getElementById('forgotErrorMessage');
+                const otpSection = document.getElementById('otpSection');
+                const sendOtpBtn = document.getElementById('sendOtpBtn');
+                const resendOtpBtn = document.getElementById('resendOtpBtn');
+
+                if (!email) {
+                    errorMessage.textContent = 'Please enter a valid email!';
+                    errorMessage.style.display = 'block';
+                    console.log('Send OTP failed: Missing email');
+                    return;
+                }
+
+                console.log('Sending OTP request for email:', email);
+                fetch('/doctor/send_otp', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: email })
+                })
+                .then(response => {
+                    if (!response.ok) throw new Error('Network response was not ok');
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        console.log('OTP sent successfully');
+                        otpSent = true;
+                        sendOtpBtn.style.display = 'none';
+                        otpSection.style.display = 'block';
+                        resendOtpBtn.style.display = 'inline-block';
+                        errorMessage.style.display = 'none';
+                        startOtpTimer();
+                    } else {
+                        console.error(`Send OTP failed: ${data.message}`);
+                        errorMessage.textContent = data.message || 'Error sending OTP';
+                        errorMessage.style.display = 'block';
+                    }
+                })
+                .catch(error => {
+                    console.error(`Fetch error during send OTP: ${error}`);
+                    errorMessage.textContent = `Error: ${error.message}`;
+                    errorMessage.style.display = 'block';
+                });
+            }
+
+            // Verify OTP
+            function verifyOtp() {
+                const otp = document.getElementById('otpInput').value;
+                const errorMessage = document.getElementById('otpErrorMessage');
+                const newPasswordField = document.getElementById('newPasswordForgot');
+                const confirmPasswordField = document.getElementById('confirmPasswordForgot');
+                const toggleNewPassword = document.getElementById('toggleNewPasswordForgot');
+                const toggleConfirmPassword = document.getElementById('toggleConfirmPasswordForgot');
+                const submitNewPasswordBtn = document.getElementById('submitNewPasswordBtn');
+
+                if (!otp) {
+                    errorMessage.textContent = 'Please enter the OTP!';
+                    errorMessage.style.display = 'block';
+                    console.log('Verify OTP failed: Missing OTP');
+                    return;
+                }
+
+                console.log('Verifying OTP:', otp);
+                fetch('/doctor/verify_otp', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ otp: otp })
+                })
+                .then(response => {
+                    if (!response.ok) throw new Error('Network response was not ok');
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        console.log('OTP verified successfully');
+                        errorMessage.style.display = 'none';
+                        newPasswordField.style.display = 'block';
+                        confirmPasswordField.style.display = 'block';
+                        toggleNewPassword.style.display = 'block';
+                        toggleConfirmPassword.style.display = 'block';
+                        submitNewPasswordBtn.style.display = 'inline-block';
+                    } else {
+                        console.error(`Verify OTP failed: ${data.message}`);
+                        errorMessage.textContent = data.message || 'Invalid OTP';
+                        errorMessage.style.display = 'block';
+                    }
+                })
+                .catch(error => {
+                    console.error(`Fetch error during verify OTP: ${error}`);
+                    errorMessage.textContent = `Error: ${error.message}`;
+                    errorMessage.style.display = 'block';
+                });
+            }
+
+            // Resend OTP
+            function resendOtp() {
+                const email = document.getElementById('forgotEmail').value;
+                const errorMessage = document.getElementById('forgotErrorMessage');
+                const resendOtpBtn = document.getElementById('resendOtpBtn');
+
+                if (!email) {
+                    errorMessage.textContent = 'Please enter a valid email!';
+                    errorMessage.style.display = 'block';
+                    console.log('Resend OTP failed: Missing email');
+                    return;
+                }
+
+                console.log('Resending OTP for email:', email);
+                fetch('/doctor/resend_otp', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: email })
+                })
+                .then(response => {
+                    if (!response.ok) throw new Error('Network response was not ok');
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        console.log('OTP resent successfully');
+                        errorMessage.style.display = 'none';
+                        startOtpTimer();
+                    } else {
+                        console.error(`Resend OTP failed: ${data.message}`);
+                        errorMessage.textContent = data.message || 'Error resending OTP';
+                        errorMessage.style.display = 'block';
+                    }
+                })
+                .catch(error => {
+                    console.error(`Fetch error during resend OTP: ${error}`);
+                    errorMessage.textContent = `Error: ${error.message}`;
+                    errorMessage.style.display = 'block';
+                });
+            }
+
+            // Submit New Password after OTP verification
+            function submitNewPassword() {
+                const newPassword = document.getElementById('newPasswordForgot').value;
+                const confirmPassword = document.getElementById('confirmPasswordForgot').value;
+                const errorMessage = document.getElementById('passwordErrorMessage');
+
+                if (!newPassword || !confirmPassword) {
+                    errorMessage.textContent = 'Please fill in all password fields!';
+                    errorMessage.style.display = 'block';
+                    console.log('Submit New Password failed: Missing fields');
+                    return;
+                }
+
+                if (newPassword !== confirmPassword) {
+                    errorMessage.textContent = 'New password and confirmation do not match!';
+                    errorMessage.style.display = 'block';
+                    console.log('Submit New Password failed: Passwords do not match');
+                    return;
+                }
+
+                console.log('Submitting new password request');
+                fetch('/doctor/update_password', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ new_password: newPassword, confirm_password: confirmPassword })
+                })
+                .then(response => {
+                    if (!response.ok) throw new Error('Network response was not ok');
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        console.log('Password updated successfully');
+                        alert('Password updated successfully!');
+                        closeModal('forgotPasswordModal');
+                    } else {
+                        console.error(`Update Password failed: ${data.message}`);
+                        errorMessage.textContent = data.message || 'Error updating password';
+                        errorMessage.style.display = 'block';
+                    }
+                })
+                .catch(error => {
+                    console.error(`Fetch error during update password: ${error}`);
+                    errorMessage.textContent = `Error: ${error.message}`;
+                    errorMessage.style.display = 'block';
+                });
+            }
+
+            // OTP Timer
+            let otpTimer;
+            function startOtpTimer() {
+                let timeLeft = 60;
+                const resendOtpBtn = document.getElementById('resendOtpBtn');
+                resendOtpBtn.disabled = true;
+                resendOtpBtn.textContent = `Resend OTP (${timeLeft}s)`;
+                otpTimer = setInterval(() => {
+                    timeLeft--;
+                    resendOtpBtn.textContent = `Resend OTP (${timeLeft}s)`;
+                    if (timeLeft <= 0) {
+                        clearInterval(otpTimer);
+                        resendOtpBtn.disabled = false;
+                        resendOtpBtn.textContent = 'Resend OTP';
+                    }
+                }, 1000);
+            }
+
+            // Close modals and dropdown when clicking outside
+            window.addEventListener('click', function(e) {
+                if (!e.target.closest('.profile-dropdown') && !profileDropdown.contains(e.target)) {
+                    closeDropdown();
+                }
+                if (e.target.className === 'modal') {
+                    closeModal('changePasswordModal');
+                    closeModal('forgotPasswordModal');
+                }
+            });
+
+            // Close modals with close button
+            document.querySelectorAll('.close-modal').forEach(button => {
+                button.addEventListener('click', function() {
+                    const modalId = this.getAttribute('onclick').match(/'([^']+)'/)[1];
+                    closeModal(modalId);
+                });
+            });
+
+            // Expose functions to global scope for HTML onclick events
+            window.togglePassword = togglePassword;
+            window.closeModal = closeModal;
+            window.submitChangePassword = submitChangePassword;
+            window.sendOtp = sendOtp;
+            window.verifyOtp = verifyOtp;
+            window.resendOtp = resendOtp;
+            window.submitNewPassword = submitNewPassword;
+
+            console.log('Navbar JavaScript fully initialized');
+        });
+    </script>
+</body>
+</html>
